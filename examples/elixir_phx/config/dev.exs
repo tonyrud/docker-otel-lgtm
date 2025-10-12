@@ -65,10 +65,10 @@ config :phoenix, :plug_init_mode, :runtime
 config :phoenix, :logger, false
 
 # OpenTelemetry development configuration
-# config :opentelemetry_exporter,
-#   otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"),
-#   otlp_headers: [],
-#   otlp_compression: :gzip
+config :opentelemetry_exporter,
+  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"),
+  otlp_headers: [],
+  otlp_compression: :gzip
 
 # Enable more detailed tracing in development
 config :opentelemetry,

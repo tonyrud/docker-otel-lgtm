@@ -43,9 +43,9 @@ config :opentelemetry,
 #   }
 
 # Configure the OpenTelemetry HTTP exporter to send to local collector
-config :opentelemetry_exporter,
-  otlp_protocol: :http_protobuf,
-  otlp_endpoint: "http://0.0.0.0:4318"
+# config :opentelemetry_exporter,
+#   otlp_protocol: :http_protobuf,
+#   otlp_endpoint: "http://0.0.0.0:4318"
 
 # otlp_headers: [],
 # otlp_compression: :gzip

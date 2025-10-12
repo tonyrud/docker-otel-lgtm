@@ -2,6 +2,8 @@ defmodule ElixirPhxWeb.DiceController do
   use ElixirPhxWeb, :controller
   require OpenTelemetry.Tracer, as: Tracer
 
+  require Logger
+
   def roll(conn, %{"sides" => sides}) do
     sides_int = String.to_integer(sides)
 
@@ -13,7 +15,7 @@ defmodule ElixirPhxWeb.DiceController do
       ])
 
       result = roll_dice(sides_int)
-      sleep_time = Enum.take_every(100..1000, 100) |> Enum.random()
+      sleep_time = Enum.take_every(100..1500, 100) |> Enum.random()
 
       Tracer.set_attribute("dice.result", result)
       Tracer.set_attribute("process.sleep", sleep_time)
@@ -43,6 +45,8 @@ defmodule ElixirPhxWeb.DiceController do
   end
 
   defp roll_dice(sides) when sides > 0 and sides < 30 do
+    Logger.info("Rolling a #{sides}-sided dice")
+
     Tracer.with_span "dice.generate_random" do
       Tracer.set_attributes([
         {"dice.sides", sides},

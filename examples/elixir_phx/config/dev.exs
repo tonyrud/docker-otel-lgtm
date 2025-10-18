@@ -74,7 +74,6 @@ config :opentelemetry_exporter,
 config :opentelemetry,
   resource: [
     service: [
-      name: "elixir_phx_dev",
       version: "0.1.0",
       namespace: "development"
     ]

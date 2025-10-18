@@ -9,7 +9,7 @@ defmodule ElixirPhx.Application do
 
   @impl true
   def start(_type, _args) do
-    setup_opentelemetry()
+    init_opentelemetry()
 
     children = [
       ElixirPhxWeb.Telemetry,
@@ -28,7 +28,7 @@ defmodule ElixirPhx.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp setup_opentelemetry do
+  defp init_opentelemetry do
     OpentelemetryBandit.setup()
     OpentelemetryPhoenix.setup(adapter: :bandit)
     # OpentelemetryEcto.setup([:elixir_phx, :repo])

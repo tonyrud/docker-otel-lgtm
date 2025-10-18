@@ -8,7 +8,7 @@ defmodule ElixirPhxWeb.DiceController do
     sides_int = String.to_integer(sides)
 
     # Add custom span with attributes
-    Tracer.with_span "dice.roll_with_sides" do
+    Tracer.with_span "roll/2" do
       Tracer.set_attributes([
         {"dice.sides", sides_int},
         {"dice.type", "custom"}
@@ -17,7 +17,6 @@ defmodule ElixirPhxWeb.DiceController do
       result = roll_dice(sides_int)
       sleep_time = Enum.take_every(100..1500, 100) |> Enum.random()
 
-      Tracer.set_attribute("dice.result", result)
       Tracer.set_attribute("process.sleep", sleep_time)
 
       # Simulate some processing time
@@ -47,13 +46,18 @@ defmodule ElixirPhxWeb.DiceController do
   defp roll_dice(sides) when sides > 0 and sides < 30 do
     Logger.info("Rolling a #{sides}-sided dice")
 
-    Tracer.with_span "dice.generate_random" do
+    Tracer.with_span "roll_dice/1" do
       Tracer.set_attributes([
         {"dice.sides", sides},
         {"operation.type", "random_generation"}
       ])
 
       result = Enum.random(1..sides)
+
+      # Simulate a long processing time for high rolls
+      if result > 4 do
+        Process.sleep(5500)
+      end
 
       # Add some custom events
       Tracer.add_event("dice.rolled", [

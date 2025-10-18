@@ -6,11 +6,10 @@ set -euo pipefail
 echo "Starting Elixir Phoenix OpenTelemetry example..."
 
 # Set environment variables for local development
-export OTEL_SERVICE_NAME="elixir-phx-dice-server"
-export OTEL_SERVICE_VERSION="0.1.0"
-# export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/v1/traces"
-export PHX_SERVER=true
-export MIX_ENV=dev
+export OTEL_SERVICE_NAME="elixir-phx-dev"
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
+# export PHX_SERVER=true
+# export MIX_ENV=dev
 
 # Check if Docker is running
 #Open Docker, only if is not running

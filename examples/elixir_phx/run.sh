@@ -34,12 +34,14 @@ echo "Setting up the Elixir Phoenix application..."
 mix setup
 
 
+echo ""
+echo ""
 echo "Starting Phoenix server with OpenTelemetry..."
 echo "Server will be available at: http://localhost:4000"
 echo "Dice roll: http://localhost:4000/rolldice"
 echo "Custom dice: http://localhost:4000/api/dice/20"
 echo ""
-echo "Make sure the LGTM stack is running (run '../docker/run-all.sh' from the docker directory)"
+echo "Make sure the LGTM stack is running (run 'run-lgtm.sh' from the root directory)"
 echo ""
 
 # Start the Phoenix server

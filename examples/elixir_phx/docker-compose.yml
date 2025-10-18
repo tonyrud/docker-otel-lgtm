@@ -1,6 +1,4 @@
 ---
-# OATS is an acceptance testing framework for OpenTelemetry
-# https://github.com/grafana/oats/tree/main/yaml
 services:
 
   # WIP: only using regular mix app at this time!!

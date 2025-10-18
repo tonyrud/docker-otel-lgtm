@@ -12,7 +12,6 @@ defmodule ElixirPhxWeb.Router do
 
     # Dice roll endpoint for generating traces
     get "/rolldice", DiceController, :roll
-    get "/rolldice/:sides", DiceController, :roll_with_sides
-    post "/rolldice/:sides", DiceController, :roll_with_sides
+    get "/rolldice/:sides", DiceController, :roll
   end
 end

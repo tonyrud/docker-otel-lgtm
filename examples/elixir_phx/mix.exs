@@ -20,7 +20,13 @@ defmodule ElixirPhx.MixProject do
   def application do
     [
       mod: {ElixirPhx.Application, []},
-      extra_applications: [:logger, :runtime_tools, :opentelemetry, :opentelemetry_exporter]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :tls_certificate_check,
+        :opentelemetry,
+        :opentelemetry_exporter
+      ]
     ]
   end
 

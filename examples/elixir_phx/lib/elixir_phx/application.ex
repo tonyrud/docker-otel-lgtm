@@ -4,9 +4,12 @@ defmodule ElixirPhx.Application do
   @moduledoc false
 
   use Application
+  require OpentelemetryPhoenix
+  require OpentelemetryEcto
 
   @impl true
   def start(_type, _args) do
+    setup_opentelemetry()
 
     children = [
       ElixirPhxWeb.Telemetry,
@@ -23,6 +26,12 @@ defmodule ElixirPhx.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: ElixirPhx.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp setup_opentelemetry do
+    OpentelemetryBandit.setup()
+    OpentelemetryPhoenix.setup(adapter: :bandit)
+    # OpentelemetryEcto.setup([:elixir_phx, :repo])
   end
 
   # Tell Phoenix to update the endpoint configuration

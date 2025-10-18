@@ -4,7 +4,7 @@ import Config
 config :elixir_phx, ElixirPhx.Repo,
   username: System.get_env("DB_USERNAME", "postgres"),
   password: System.get_env("DB_PASSWORD", "postgres"),
-  hostname: System.get_env("DB_HOST", "0.0.0.0"),
+  hostname: System.get_env("DB_HOST", "localhost"),
   database: System.get_env("DB_NAME", "elixir_phx_dev"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
@@ -19,7 +19,7 @@ config :elixir_phx, ElixirPhx.Repo,
 config :elixir_phx, ElixirPhxWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("PORT") || "4000")],
+  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -62,4 +62,18 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :phoenix, :logger, false
+# OpenTelemetry development configuration
+config :opentelemetry_exporter,
+  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318/v1/traces"),
+  otlp_headers: [],
+  otlp_compression: :gzip
+
+# Enable more detailed tracing in development
+config :opentelemetry,
+  resource: [
+    service: [
+      name: "elixir_phx_dev",
+      version: "0.1.0",
+      namespace: "development"
+    ]
+  ]

@@ -66,15 +66,16 @@ config :phoenix, :logger, false
 
 # OpenTelemetry development configuration
 config :opentelemetry_exporter,
-  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"),
-  otlp_headers: [],
-  otlp_compression: :gzip
+  otlp_protocol: :http_protobuf,
+  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
 
-# Enable more detailed tracing in development
 config :opentelemetry,
   resource: [
     service: [
       version: "0.1.0",
       namespace: "development"
     ]
-  ]
+  ],
+  span_processor: :batch,
+  traces_exporter: :otlp,
+  logs_exporter: :otlp

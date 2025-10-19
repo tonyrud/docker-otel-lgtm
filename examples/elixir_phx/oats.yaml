@@ -1,7 +1,7 @@
 ---
 # OATS (OpenTelemetry Acceptance Testing Specification)
 # Configuration for the Elixir Phoenix example
-
+# info: https://github.com/grafana/oats
 tests:
   - name: elixir_phx_health_check
     description: Test health check endpoint generates traces

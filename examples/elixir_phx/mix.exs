@@ -12,7 +12,7 @@ defmodule ElixirPhx.MixProject do
       deps: deps(),
       listeners: [Phoenix.CodeReloader],
       releases: [
-      elixir_phx: [
+        elixir_phx: [
           applications: [
             # start OpenTelemetry applications
             # exporter first to ensure it's started before opentelemetry

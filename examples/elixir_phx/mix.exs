@@ -10,7 +10,18 @@ defmodule ElixirPhx.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      releases: [
+      elixir_phx: [
+          applications: [
+            # start OpenTelemetry applications
+            # exporter first to ensure it's started before opentelemetry
+            opentelemetry_exporter: :permanent,
+            # # start OpenTelemetry as temporary to avoid crashing the app if it fails
+            opentelemetry: :temporary
+          ]
+        ]
+      ]
     ]
   end
 
@@ -23,9 +34,7 @@ defmodule ElixirPhx.MixProject do
       extra_applications: [
         :logger,
         :runtime_tools,
-        :tls_certificate_check,
-        :opentelemetry,
-        :opentelemetry_exporter
+        :tls_certificate_check
       ]
     ]
   end

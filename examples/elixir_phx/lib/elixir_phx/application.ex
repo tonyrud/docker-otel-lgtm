@@ -16,9 +16,6 @@ defmodule ElixirPhx.Application do
       ElixirPhx.Repo,
       {DNSCluster, query: Application.get_env(:elixir_phx, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: ElixirPhx.PubSub},
-      # Start a worker by calling: ElixirPhx.Worker.start_link(arg)
-      # {ElixirPhx.Worker, arg},
-      # Start to serve requests, typically the last entry
       ElixirPhxWeb.Endpoint
     ]
 

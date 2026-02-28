@@ -44,6 +44,7 @@ defmodule ElixirPhxWeb.DiceController do
   end
 
   defp roll_dice(sides) when sides > 0 and sides < 30 do
+    # Logger.metadata( ) has trace and span ids in the metadata, so they will be included in all logs
     Logger.info("Rolling a #{sides}-sided dice")
 
     Tracer.with_span "roll_dice/1" do

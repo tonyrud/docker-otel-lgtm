@@ -61,8 +61,8 @@ fi
 
 $RUNTIME container run \
 	--name lgtm \
-	"${OBI_FLAGS[@]}" \
-	"${OBI_ENV_FLAGS[@]}" \
+	${OBI_FLAGS[@]+"${OBI_FLAGS[@]}"} \
+	${OBI_ENV_FLAGS[@]+"${OBI_ENV_FLAGS[@]}"} \
 	-p 3000:3000 \
 	-p 4040:4040 \
 	-p 4317:4317 \
@@ -73,6 +73,7 @@ $RUNTIME container run \
 	-v "${LOCAL_VOLUME}"/grafana:/data/grafana:"${MOUNT_OPTS}" \
 	-v "${LOCAL_VOLUME}"/prometheus:/data/prometheus:"${MOUNT_OPTS}" \
 	-v "${LOCAL_VOLUME}"/loki:/data/loki:"${MOUNT_OPTS}" \
+	-v "${PWD}"/docker/otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml \
 	-e GF_PATHS_DATA=/data/grafana \
 	--env-file .env \
 	"$IMAGE"

@@ -4,18 +4,18 @@ defmodule ElixirPhx.Application do
   @moduledoc false
 
   use Application
+  require OpentelemetryPhoenix
+  require OpentelemetryEcto
 
   @impl true
   def start(_type, _args) do
+    init_opentelemetry()
 
     children = [
       ElixirPhxWeb.Telemetry,
       ElixirPhx.Repo,
       {DNSCluster, query: Application.get_env(:elixir_phx, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: ElixirPhx.PubSub},
-      # Start a worker by calling: ElixirPhx.Worker.start_link(arg)
-      # {ElixirPhx.Worker, arg},
-      # Start to serve requests, typically the last entry
       ElixirPhxWeb.Endpoint
     ]
 
@@ -23,6 +23,13 @@ defmodule ElixirPhx.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: ElixirPhx.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp init_opentelemetry do
+    OpentelemetryBandit.setup()
+    OpentelemetryPhoenix.setup(adapter: :bandit)
+    # TODO: the query span do not have SQL statements
+    OpentelemetryEcto.setup([:elixir_phx, :repo], db_statement: true)
   end
 
   # Tell Phoenix to update the endpoint configuration

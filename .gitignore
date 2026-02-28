@@ -11,3 +11,4 @@ opentelemetry-javaagent*.jar
 grafana-opentelemetry*.jar
 build/
 
+examples/elixir_phx/log/application.log

@@ -6,27 +6,71 @@ on:
     tags:
       - "v*.*.*"
 
-permissions:
-  contents: read
-  id-token: write
+permissions: {}
 
 jobs:
   release:
     runs-on: ubuntu-24.04
 
+    concurrency:
+      group: "${{ github.workflow }}-${{ github.ref }}"
+      cancel-in-progress: false
+
+    env:
+      # renovate: datasource=github-releases depName=cosign packageName=sigstore/cosign
+      COSIGN_VERSION: v3.0.5
+
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+
     steps:
-      - id: checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
+      - name: Get Git commit timestamp
+        shell: bash
+        run: echo "GIT_COMMIT_EPOCH=$(git log -1 --pretty=%ct)" >> "${GITHUB_ENV}"
+
       - id: push-to-dockerhub
-        uses: grafana/shared-workflows/actions/build-push-to-dockerhub@1acd69f48c01d7aef5f209f94048dfeb789026db # build-push-to-dockerhub/v0.2.0
+        uses: grafana/shared-workflows/actions/docker-build-push-image@b3d136565946d8788dd6812881fb0fb2fe14bacb # docker-build-push-image/v0.2.0
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+          SOURCE_DATE_EPOCH: ${{ env.GIT_COMMIT_EPOCH }}
         with:
-          repository: grafana/otel-lgtm
+          dockerhub-repository: grafana/otel-lgtm
           context: docker
           push: true
           platforms: linux/amd64,linux/arm64
+          registries: "dockerhub"
+          build-args: |
+            LGTM_VERSION=${{ github.ref_name }}
           tags: |-
             type=match,pattern=v(.*),group=1
             latest
+          labels: |-
+            org.opencontainers.image.ref.name=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            vcs-ref=${{ github.sha }}
+            version=${{ github.ref_name }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@96278af6caaf10aea03fd8d33a09a777ca52d62f # v3.2.0
+        with:
+          push-to-registry: true
+          subject-name: docker.io/grafana/otel-lgtm
+          subject-digest: ${{ steps.push-to-dockerhub.outputs.digest }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        with:
+          cosign-release: ${{ env.COSIGN_VERSION }}
+
+      - name: Sign container images
+        env:
+          DIGEST: ${{ steps.push-to-dockerhub.outputs.digest }}
+          TAGS: ${{ steps.push-to-dockerhub.outputs.tags }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes "{}@${DIGEST}"

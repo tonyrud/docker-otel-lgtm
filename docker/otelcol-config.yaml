@@ -46,6 +46,7 @@ extensions:
   file_storage:
     directory: /var/lib/otelcol-contrib/file_storage
     timeout: 10s
+    create_directory: true
 
 processors:
   batch:

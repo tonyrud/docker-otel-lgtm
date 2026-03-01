@@ -37,7 +37,7 @@ receivers:
         if: 'attributes.metadata?.request_id != nil'
       - type: move
         from: attributes.metadata.service_name
-        to: attributes["service.name"]
+        to: resource["service.name"]
         if: 'attributes.metadata?.service_name != nil'
   
   prometheus/collector:

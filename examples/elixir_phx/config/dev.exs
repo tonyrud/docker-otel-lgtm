@@ -52,8 +52,6 @@ config :elixir_phx, ElixirPhxWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :elixir_phx, dev_routes: true
 
-# JSON logging configuration (logger_json v7.x - using :logger_json formatter)
-# Dynamic service metadata for OpenTelemetry correlation
 service_name = System.get_env("OTEL_SERVICE_NAME") || "elixir-phx-dev"
 
 config :logger,
@@ -66,10 +64,8 @@ config :logger,
     elixir_version: System.version()
   ]
 
-# Console logging with JSON format
-config :logger, :console,
-  formatter: :logger_json,
-  metadata: :all
+# Do not include metadata nor timestamps in development logs
+config :logger, :default_formatter, format: "[$level] $message\n"
 
 # File logging with JSON format for OpenTelemetry collector scraping
 config :logger, :file_log,

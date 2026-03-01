@@ -8,6 +8,38 @@ receivers:
         cors:
           allowed_origins:
             - http://*
+  
+  # File log receiver for scraping Elixir application logs
+  filelog:
+    include:
+      - /var/log/elixir_phx/*.log
+    start_at: end
+    storage: file_storage
+    operators:
+      # Parse JSON logs from Elixir application
+      - type: json_parser
+        id: parse_json_logs  
+        parse_from: body
+        parse_to: attributes
+      # Map OpenTelemetry fields from metadata to standard format
+      - type: move
+        from: attributes.metadata.otel_trace_id
+        to: attributes["trace_id"]
+        if: 'attributes.metadata?.otel_trace_id != nil'
+      - type: move
+        from: attributes.metadata.otel_span_id  
+        to: attributes["span_id"]
+        if: 'attributes.metadata?.otel_span_id != nil'
+      # Extract request_id from metadata if present
+      - type: move
+        from: attributes.metadata.request_id
+        to: attributes["request_id"]
+        if: 'attributes.metadata?.request_id != nil'
+      - type: move
+        from: attributes.metadata.service_name
+        to: resource["service.name"]
+        if: 'attributes.metadata?.service_name != nil'
+  
   prometheus/collector:
     config:
       scrape_configs:
@@ -20,10 +52,16 @@ extensions:
   health_check:
     endpoint: 0.0.0.0:13133
     path: "/ready"
+  
+  # File storage for filelog receiver state
+  file_storage:
+    directory: /var/lib/otelcol-contrib/file_storage
+    timeout: 10s
+    create_directory: true
 
 processors:
   batch:
-
+  
 exporters:
   otlphttp/metrics:
     endpoint: http://127.0.0.1:9090/api/v1/otlp
@@ -49,7 +87,7 @@ exporters:
     verbosity: detailed
 
 service:
-  extensions: [health_check]
+  extensions: [health_check, file_storage]
   pipelines:
     traces:
       receivers: [otlp]
@@ -62,7 +100,8 @@ service:
       exporters: [otlphttp/metrics]
       #exporters: [otlphttp/metrics,debug/metrics]
     logs:
-      receivers: [otlp]
+      # Both OTLP and file-based log collection
+      receivers: [otlp, filelog]
       processors: [batch]
       exporters: [otlphttp/logs]
       #exporters: [otlphttp/logs,debug/logs]

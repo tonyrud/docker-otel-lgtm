@@ -62,6 +62,8 @@ defmodule ElixirPhx.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
+      {:logger_json, "~> 7.0"},
+      {:logger_file_backend, "~> 0.0.14"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       # OpenTelemetry dependencies

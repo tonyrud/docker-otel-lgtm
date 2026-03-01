@@ -19,6 +19,8 @@ defmodule ElixirPhxWeb.DiceController do
 
       Tracer.set_attribute("process.sleep", sleep_time)
 
+      Logger.debug("Got result: #{result}")
+
       # Simulate some processing time
       Process.sleep(sleep_time)
 

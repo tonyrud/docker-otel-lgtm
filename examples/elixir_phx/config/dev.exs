@@ -52,8 +52,33 @@ config :elixir_phx, ElixirPhxWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :elixir_phx, dev_routes: true
 
-# Do not include metadata nor timestamps in development logs
-config :logger, :default_formatter, format: "[$level] $message\n"
+service_name = System.get_env("OTEL_SERVICE_NAME") || "elixir-phx-dev"
+
+config :logger,
+  level: :debug,
+  backends: [:console, {LoggerFileBackend, :file_log}],
+  # Global metadata applied to all log entries
+  metadata: [
+    service_name: service_name,
+    deployment_environment: "dev",
+    elixir_version: System.version()
+  ]
+
+if System.get_env("JSON_LOGGER") == "true" do
+  IO.puts("Using JSON logger for development")
+  config :logger, :default_handler, formatter: {LoggerJSON.Formatters.Basic, metadata: :all}
+
+  # Alternative: config :logger, :default_handler, formatter: {ElixirPhx.JsonLogger, metadata: :all}
+  # File logging with JSON format for OpenTelemetry collector scraping
+  config :logger, :file_log,
+    path: "log/elixir_phx.log",
+    format: {ElixirPhx.JsonLogger, :format},
+    metadata: :all,
+    rotate: %{max_bytes: 10_485_760, keep: 5}
+else
+  # Do not include metadata nor timestamps in development logs
+  config :logger, :default_formatter, format: "[$level] $message\n"
+end
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

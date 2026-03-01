@@ -39,9 +39,7 @@ ab -n 100 -c 5 http://127.0.0.1:4000/rolldice
 
 ## TODOs
 
-- Make the configuration better
-- Send logs to grafana
-- Connect logs to traces with links
 - Ecto examples with SQL statements
-- Examples with db.connection errors as well
+- Examples with db.connection errors as well. Show the SQL statment that failed on timeouts
+- Make an external call via Req to see tracing across services
 - Move to docker compose([example with full otel/lgtm and traffic generation](https://github.com/causely-oss/slow-query-lab/blob/main/docker-compose.yml))

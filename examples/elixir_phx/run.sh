@@ -14,8 +14,10 @@ log_message() {
 }
 
 # Set environment variables for local development
-export OTEL_SERVICE_NAME="elixir-phx-dev"
+export OTEL_SERVICE_NAME="dice-server-phx"
 export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
+# Enable JSON logging for OpenTelemetry collector and dev console
+export JSON_LOGGER="true"
 
 # Check if Docker is running
 #Open Docker, only if is not running

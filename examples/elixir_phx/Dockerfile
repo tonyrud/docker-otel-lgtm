@@ -14,6 +14,10 @@ WORKDIR /app
 RUN mix local.hex --force && \
     mix local.rebar --force
 
+# -------------------------------
+# Dev stage
+# -------------------------------
+
 FROM build AS dev
 
 ENV MIX_ENV=dev

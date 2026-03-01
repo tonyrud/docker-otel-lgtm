@@ -52,8 +52,13 @@ config :elixir_phx, ElixirPhxWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :elixir_phx, dev_routes: true
 
-# Do not include metadata nor timestamps in development logs
-config :logger, :default_formatter, format: "[$level] $message\n"
+# JSON logging configuration (logger_json v7.x - console formatter approach)
+config :logger,
+  level: :debug
+
+config :logger, :console,
+  format: {LoggerJSON.Formatters.Basic, :format},
+  metadata: :all
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

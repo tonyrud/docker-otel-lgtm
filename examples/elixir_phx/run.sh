@@ -14,7 +14,7 @@ log_message() {
 }
 
 # Set environment variables for local development
-export OTEL_SERVICE_NAME="elixir-phx-dev"
+export OTEL_SERVICE_NAME="dice-server-phx"
 export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
 
 # Check if Docker is running

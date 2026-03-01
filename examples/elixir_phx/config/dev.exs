@@ -74,20 +74,9 @@ config :logger, :console,
 # File logging with JSON format for OpenTelemetry collector scraping
 config :logger, :file_log,
   path: "log/elixir_phx.log",
-  formatter: :logger_json,
+  format: {ElixirPhx.JsonLogger, :format},
   metadata: :all,
   rotate: %{max_bytes: 10_485_760, keep: 5}
-
-# Configure logger_json v7.x to rename OpenTelemetry fields for Grafana correlation
-config :logger_json,
-  rename_metadata: %{
-    "otel_trace_id" => "trace_id",
-    "otel_span_id" => "span_id",
-    "otel_trace_flags" => "trace_flags"
-  }
-
-# config :logger, :default_handler,
-#   formatter: LoggerJSON.Formatters.Basic.new(metadata: [:request_id])
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

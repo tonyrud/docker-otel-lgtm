@@ -16,48 +16,29 @@ receivers:
     start_at: end
     storage: file_storage
     operators:
-      # Extract OpenTelemetry trace ID from Elixir logs
-      - type: regex_parser
-        id: extract_otel_trace_id
-        regex: '.*otel_trace_id=(?P<otel_trace_id>[a-f0-9]+)'
+      # Parse JSON logs from Elixir application
+      - type: json_parser
+        id: parse_json_logs  
         parse_from: body
         parse_to: attributes
-      # Extract OpenTelemetry span ID from Elixir logs  
-      - type: regex_parser
-        id: extract_otel_span_id
-        regex: '.*otel_span_id=(?P<otel_span_id>[a-f0-9]+)'
-        parse_from: body
-        parse_to: attributes
-      # Extract service name
-      - type: regex_parser
-        id: extract_service_name  
-        regex: '.*service_name=(?P<service_name>[^\s]+)'
-        parse_from: body
-        parse_to: attributes
-      # Extract log level
-      - type: regex_parser
-        id: extract_level
-        regex: '\[(?P<level>\w+)\]'
-        parse_from: body  
-        parse_to: attributes
-      # Extract request ID
-      - type: regex_parser
-        id: extract_request_id
-        regex: '.*request_id=(?P<request_id>[^\s]+)'
-        parse_from: body
-        parse_to: attributes
-      # Move trace ID to standard OpenTelemetry format
+      # Map OpenTelemetry fields from metadata to standard format
       - type: move
-        from: attributes.otel_trace_id
+        from: attributes.metadata.otel_trace_id
         to: attributes["trace_id"]
-      # Move span ID to standard OpenTelemetry format  
+        if: 'attributes.metadata?.otel_trace_id != nil'
       - type: move
-        from: attributes.otel_span_id
+        from: attributes.metadata.otel_span_id  
         to: attributes["span_id"]
-      # Move service name to resource attributes
+        if: 'attributes.metadata?.otel_span_id != nil'
+      # Extract request_id from metadata if present
       - type: move
-        from: attributes.service_name
-        to: resource["service.name"]
+        from: attributes.metadata.request_id
+        to: attributes["request_id"]
+        if: 'attributes.metadata?.request_id != nil'
+      - type: move
+        from: attributes.metadata.service_name
+        to: attributes["service.name"]
+        if: 'attributes.metadata?.service_name != nil'
   
   prometheus/collector:
     config:

@@ -15,30 +15,33 @@ defmodule ElixirPhxWeb.DiceController do
       ])
 
       result = roll_dice(sides_int)
-      sleep_time = Enum.take_every(100..1500, 100) |> Enum.random()
-
-      Tracer.set_attribute("process.sleep", sleep_time)
 
       Logger.debug("Got result: #{result}")
+
+      # fast but random sleep to create some latency and variability in traces
+
+      sleep_time =
+        if result > 20 do
+          Logger.warn("Rolling a dice with more than 20 sides may take longer to process")
+
+          # 1s to 10s sleep to create some high-latency traces for larger dice
+          Enum.take_every(1000..10000, 1000) |> Enum.random()
+        else
+          Enum.take_every(10..100, 10) |> Enum.random()
+        end
+
+      Tracer.set_attribute("process.sleep", sleep_time)
 
       # Simulate some processing time
       Process.sleep(sleep_time)
 
       conn
       |> put_status(:ok)
-      |> json(%{result: result, sides: sides_int})
+      |> json(%{result: result, sides: sides_int, sleep_time: sleep_time})
     end
   end
 
-  def roll(conn, _params) do
-    result = roll_dice(6)
-
-    conn
-    |> put_status(:ok)
-    |> json(%{result: result, sides: 6})
-  end
-
-  defp roll_dice(sides) when sides > 0 and sides < 30 do
+  defp roll_dice(sides) when sides > 0 and sides <= 100 do
     # Logger.metadata( ) has trace and span ids in the metadata, so they will be included in all logs
     Logger.info("Rolling a #{sides}-sided dice")
 
@@ -49,11 +52,6 @@ defmodule ElixirPhxWeb.DiceController do
       ])
 
       result = Enum.random(1..sides)
-
-      # Simulate a long processing time for high rolls
-      if result > 4 do
-        Process.sleep(5500)
-      end
 
       # Add some custom events
       Tracer.add_event("dice.rolled", [

@@ -56,28 +56,30 @@ services:
           
           # === FAST BUT FREQUENT (high traffic, low latency) ===
           # These are called very often to create high-impact but fast queries
-          curl -s http://host.docker.internal:4000/rolldice > /dev/null;
           curl -s http://host.docker.internal:4000/rolldice/6 > /dev/null;
-          curl -s http://host.docker.internal:4000/api/dice/6 > /dev/null;
           
           # === MIXED PATTERNS (regular calls with different dice sides) ===
           # Called regularly to create diverse trace patterns
           curl -s http://host.docker.internal:4000/rolldice/12 > /dev/null;
-          curl -s http://host.docker.internal:4000/api/dice/20 > /dev/null;
           
           # === SLOW BUT RARE (low traffic, high latency) ===
           # Called infrequently to create varied traffic patterns
           if [ $((COUNTER % 20)) -eq 0 ]; then
+            echo "Generating some slow requests to create high-latency traces...";
+            echo "";
             curl -s http://host.docker.internal:4000/rolldice/100 > /dev/null;
+            curl -s http://host.docker.internal:4000/api/dice/50 > /dev/null;
+
           fi
           if [ $((COUNTER % 30)) -eq 0 ]; then
-            curl -s http://host.docker.internal:4000/api/dice/50 > /dev/null;
+            echo "Generating some invalid requests to create errors and exceptions in traces/logs...";
+            echo "";
+            curl -s http://host.docker.internal:4000/rolldice/abc > /dev/null;
           fi
           if [ $((COUNTER % 50)) -eq 0 ]; then
             curl -s http://host.docker.internal:4000/rolldice/1000 > /dev/null;
           fi
           
-          sleep 0.15;
         done
 
 volumes:

@@ -53,9 +53,18 @@ config :elixir_phx, ElixirPhxWeb.Endpoint,
 config :elixir_phx, dev_routes: true
 
 # JSON logging configuration (logger_json v7.x - using :logger_json formatter)
+# Dynamic service metadata for OpenTelemetry correlation
+service_name = System.get_env("OTEL_SERVICE_NAME") || "elixir-phx-dev"
+
 config :logger,
   level: :debug,
-  backends: [:console, {LoggerFileBackend, :file_log}]
+  backends: [:console, {LoggerFileBackend, :file_log}],
+  # Global metadata applied to all log entries
+  metadata: [
+    service_name: service_name,
+    deployment_environment: "dev",
+    elixir_version: System.version()
+  ]
 
 # Console logging with JSON format
 config :logger, :console,
@@ -68,6 +77,14 @@ config :logger, :file_log,
   formatter: :logger_json,
   metadata: :all,
   rotate: %{max_bytes: 10_485_760, keep: 5}
+
+# Configure logger_json v7.x to rename OpenTelemetry fields for Grafana correlation
+config :logger_json,
+  rename_metadata: %{
+    "otel_trace_id" => "trace_id",
+    "otel_span_id" => "span_id",
+    "otel_trace_flags" => "trace_flags"
+  }
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

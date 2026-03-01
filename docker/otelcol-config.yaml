@@ -16,18 +16,48 @@ receivers:
     start_at: end
     storage: file_storage
     operators:
-      # Parse JSON logs from your Elixir application
-      - type: json_parser
-        id: parse_json
-        parse_from: attributes.message
+      # Extract OpenTelemetry trace ID from Elixir logs
+      - type: regex_parser
+        id: extract_otel_trace_id
+        regex: '.*otel_trace_id=(?P<otel_trace_id>[a-f0-9]+)'
+        parse_from: body
         parse_to: attributes
-      # Add service name and other attributes
-      - type: add
-        field: resource.service.name
-        value: "elixir_phx"
-      - type: add
-        field: resource.service.version
-        value: "0.1.0"
+      # Extract OpenTelemetry span ID from Elixir logs  
+      - type: regex_parser
+        id: extract_otel_span_id
+        regex: '.*otel_span_id=(?P<otel_span_id>[a-f0-9]+)'
+        parse_from: body
+        parse_to: attributes
+      # Extract service name
+      - type: regex_parser
+        id: extract_service_name  
+        regex: '.*service_name=(?P<service_name>[^\s]+)'
+        parse_from: body
+        parse_to: attributes
+      # Extract log level
+      - type: regex_parser
+        id: extract_level
+        regex: '\[(?P<level>\w+)\]'
+        parse_from: body  
+        parse_to: attributes
+      # Extract request ID
+      - type: regex_parser
+        id: extract_request_id
+        regex: '.*request_id=(?P<request_id>[^\s]+)'
+        parse_from: body
+        parse_to: attributes
+      # Move trace ID to standard OpenTelemetry format
+      - type: move
+        from: attributes.otel_trace_id
+        to: attributes["trace_id"]
+      # Move span ID to standard OpenTelemetry format  
+      - type: move
+        from: attributes.otel_span_id
+        to: attributes["span_id"]
+      # Move service name to resource attributes
+      - type: move
+        from: attributes.service_name
+        to: resource["service.name"]
   
   prometheus/collector:
     config:
@@ -54,9 +84,15 @@ processors:
   # Resource processor to standardize resource attributes
   resource:
     attributes:
+      - key: service.name
+        value: "elixir-phx-dev"
+        action: upsert
+      - key: service.version  
+        value: "0.1.0"
+        action: upsert
       - key: deployment.environment
         value: development
-        action: insert
+        action: upsert
 
 exporters:
   otlphttp/metrics:

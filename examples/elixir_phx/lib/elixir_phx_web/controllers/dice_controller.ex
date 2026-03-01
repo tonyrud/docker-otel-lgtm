@@ -28,13 +28,6 @@ defmodule ElixirPhxWeb.DiceController do
       |> put_status(:ok)
       |> json(%{result: result, sides: sides_int})
     end
-  rescue
-    ArgumentError ->
-      Tracer.record_exception(%ArgumentError{message: "Invalid sides parameter"})
-
-      conn
-      |> put_status(:bad_request)
-      |> json(%{error: "Invalid sides parameter"})
   end
 
   def roll(conn, _params) do
@@ -71,6 +64,4 @@ defmodule ElixirPhxWeb.DiceController do
       result
     end
   end
-
-  defp roll_dice(_), do: raise(ArgumentError, "Sides must be greater than 0")
 end

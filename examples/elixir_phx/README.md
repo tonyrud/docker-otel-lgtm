@@ -29,7 +29,6 @@ Now you can visit [`http://localhost:4000/rolldice`](http://localhost:4000/rolld
 docker compose up traffic
 ```
 
-
 ## TODOs
 
 - Ecto examples with SQL statements
@@ -37,4 +36,4 @@ docker compose up traffic
 - Add sampling examples
 - Examples with db.connection errors as well. Show the SQL statment that failed on timeouts
 - Make an external call via Req to see tracing across services
-- Move to docker compose([example with full otel/lgtm and traffic generation](https://github.com/causely-oss/slow-query-lab/blob/main/docker-compose.yml))
+- Move to docker compose for single start all cmd

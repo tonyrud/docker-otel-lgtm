@@ -86,6 +86,9 @@ config :logger_json,
     "otel_trace_flags" => "trace_flags"
   }
 
+# config :logger, :default_handler,
+#   formatter: LoggerJSON.Formatters.Basic.new(metadata: [:request_id])
+
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20

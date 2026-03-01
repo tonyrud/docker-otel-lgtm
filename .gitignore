@@ -14,6 +14,4 @@ build/
 obj/
 examples/go/dice
 
-application.log
 .vscode/settings.json
-examples/elixir_phx/log/elixir_phx.log

@@ -52,13 +52,22 @@ config :elixir_phx, ElixirPhxWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :elixir_phx, dev_routes: true
 
-# JSON logging configuration (logger_json v7.x - console formatter approach)
+# JSON logging configuration (logger_json v7.x - using :logger_json formatter)
 config :logger,
-  level: :debug
+  level: :debug,
+  backends: [:console, {LoggerFileBackend, :file_log}]
 
+# Console logging with JSON format
 config :logger, :console,
-  format: {LoggerJSON.Formatters.Basic, :format},
+  formatter: :logger_json,
   metadata: :all
+
+# File logging with JSON format for OpenTelemetry collector scraping
+config :logger, :file_log,
+  path: "log/elixir_phx.log",
+  formatter: :logger_json,
+  metadata: :all,
+  rotate: %{max_bytes: 10_485_760, keep: 5}
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

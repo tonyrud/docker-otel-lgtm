@@ -59,6 +59,9 @@ else
 	$RUNTIME image pull "$IMAGE"
 fi
 
+# Create log directory for Elixir application
+mkdir -p "${PWD}/examples/elixir_phx/log"
+
 $RUNTIME container run \
 	--name lgtm \
 	${OBI_FLAGS[@]+"${OBI_FLAGS[@]}"} \
@@ -74,6 +77,7 @@ $RUNTIME container run \
 	-v "${LOCAL_VOLUME}"/prometheus:/data/prometheus:"${MOUNT_OPTS}" \
 	-v "${LOCAL_VOLUME}"/loki:/data/loki:"${MOUNT_OPTS}" \
 	-v "${PWD}"/docker/otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml \
+	-v "${PWD}"/examples/elixir_phx/log:/var/log/elixir_phx:ro \
 	-e GF_PATHS_DATA=/data/grafana \
 	--env-file .env \
 	"$IMAGE"

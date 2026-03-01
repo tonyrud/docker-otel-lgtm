@@ -62,19 +62,6 @@ extensions:
 processors:
   batch:
   
-  # # Resource processor to standardize resource attributes
-  # resource:
-  #   attributes:
-  #     - key: service.name
-  #       value: "elixir-phx-dev"
-  #       action: upsert
-  #     - key: service.version  
-  #       value: "0.1.0"
-  #       action: upsert
-  #     - key: deployment.environment
-  #       value: development
-  #       action: upsert
-
 exporters:
   otlphttp/metrics:
     endpoint: http://127.0.0.1:9090/api/v1/otlp
@@ -120,5 +107,4 @@ service:
       #exporters: [otlphttp/logs,debug/logs]
     profiles:
       receivers: [otlp]
-      processors: []
       exporters: [otlp/profiles]

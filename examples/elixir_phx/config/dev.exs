@@ -64,15 +64,21 @@ config :logger,
     elixir_version: System.version()
   ]
 
-# Do not include metadata nor timestamps in development logs
-config :logger, :default_formatter, format: "[$level] $message\n"
+if System.get_env("JSON_LOGGER") == "true" do
+  IO.puts("Using JSON logger for development")
+  config :logger, :default_handler, formatter: {LoggerJSON.Formatters.Basic, metadata: :all}
 
-# File logging with JSON format for OpenTelemetry collector scraping
-config :logger, :file_log,
-  path: "log/elixir_phx.log",
-  format: {ElixirPhx.JsonLogger, :format},
-  metadata: :all,
-  rotate: %{max_bytes: 10_485_760, keep: 5}
+  # Alternative: config :logger, :default_handler, formatter: {ElixirPhx.JsonLogger, metadata: :all}
+  # File logging with JSON format for OpenTelemetry collector scraping
+  config :logger, :file_log,
+    path: "log/elixir_phx.log",
+    format: {ElixirPhx.JsonLogger, :format},
+    metadata: :all,
+    rotate: %{max_bytes: 10_485_760, keep: 5}
+else
+  # Do not include metadata nor timestamps in development logs
+  config :logger, :default_formatter, format: "[$level] $message\n"
+end
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

@@ -24,7 +24,7 @@ file = "https://raw.githubusercontent.com/grafana/flint/8822bdc543f28f2c7dd1f697
 description = "Verify renovate-tracked-deps.json is up to date"
 file = "https://raw.githubusercontent.com/grafana/flint/8822bdc543f28f2c7dd1f697af4df6d89768c507/tasks/lint/renovate-deps.py" # v0.7.0
 
-[tasks.lint]
+[tasks."lint"]
 description = "Run all lints"
 depends = ["lint:super-linter", "lint:links", "lint:renovate-deps"]
 

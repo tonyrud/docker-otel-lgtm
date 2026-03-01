@@ -99,6 +99,3 @@ if config_env() == :prod do
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
 end
-
-# config :logger, :default_handler,
-#   formatter: LoggerJSON.Formatters.Basic.new(metadata: [:request_id])

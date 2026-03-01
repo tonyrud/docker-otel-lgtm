@@ -4,7 +4,6 @@ defmodule ElixirPhx.JsonLogger do
   """
 
   def format(level, message, timestamp, metadata) do
-    # Create a log entry in the same format as LoggerJSON
     log_entry = %{
       "severity" => to_string(level),
       "message" => IO.chardata_to_string(message),
@@ -16,12 +15,11 @@ defmodule ElixirPhx.JsonLogger do
   end
 
   defp format_timestamp({{year, month, day}, {hour, minute, second, microsecond}}) do
-    # Format as ISO8601
-    :io_lib.format(
-      "~4..0w-~2..0w-~2..0wT~2..0w:~2..0w:~2..0w.~3..0wZ",
-      [year, month, day, hour, minute, second, div(microsecond, 1000)]
-    )
-    |> IO.chardata_to_string()
+    # Convert to DateTime and format as ISO8601
+    {:ok, datetime} =
+      DateTime.new(Date.new!(year, month, day), Time.new!(hour, minute, second, microsecond))
+
+    DateTime.to_iso8601(datetime)
   end
 
   defp format_metadata(metadata) when is_list(metadata) do
@@ -30,12 +28,6 @@ defmodule ElixirPhx.JsonLogger do
     |> Enum.into(%{})
   end
 
-  defp json_serializable?(value) when is_pid(value), do: false
-  defp json_serializable?(value) when is_reference(value), do: false
-  defp json_serializable?(value) when is_port(value), do: false
-  defp json_serializable?(value) when is_function(value), do: false
-  # MFA tuples
-  defp json_serializable?({_, _, _}), do: false
   defp json_serializable?(value) when is_atom(value), do: true
   defp json_serializable?(value) when is_binary(value), do: true
   defp json_serializable?(value) when is_number(value), do: true

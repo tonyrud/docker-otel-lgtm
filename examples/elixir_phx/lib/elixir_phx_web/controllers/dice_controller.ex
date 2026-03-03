@@ -4,6 +4,13 @@ defmodule ElixirPhxWeb.DiceController do
 
   require Logger
 
+  def roll(_conn, %{"sides" => "timeout"}) do
+    Logger.error("Request is going to timeout, simulating a long-running operation")
+    Process.sleep(15_000)
+
+    raise "Simulated timeout error"
+  end
+
   def roll(conn, %{"sides" => sides}) do
     sides_int = String.to_integer(sides)
 
@@ -22,7 +29,7 @@ defmodule ElixirPhxWeb.DiceController do
 
       sleep_time =
         if result > 20 do
-          Logger.warn("Rolling a dice with more than 20 sides may take longer to process")
+          Logger.warning("Rolling a dice with more than 20 sides may take longer to process")
 
           # 1s to 10s sleep to create some high-latency traces for larger dice
           Enum.take_every(1000..10000, 1000) |> Enum.random()

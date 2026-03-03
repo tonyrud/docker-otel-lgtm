@@ -45,6 +45,8 @@ services:
     image: curlimages/curl:8.10.1
     depends_on:
       - elixir_phx
+    environment:
+      SLEEP_INTERVAL: "2"
     command:
       - sh
       - -c
@@ -68,6 +70,7 @@ services:
             echo "Generating some slow requests to create high-latency traces...";
             echo "";
             curl -s http://host.docker.internal:4000/rolldice/100 > /dev/null;
+            # not a real endpoint
             curl -s http://host.docker.internal:4000/api/dice/50 > /dev/null;
 
           fi
@@ -78,8 +81,10 @@ services:
           fi
           if [ $((COUNTER % 50)) -eq 0 ]; then
             curl -s http://host.docker.internal:4000/rolldice/1000 > /dev/null;
+            curl -s http://host.docker.internal:4000/rolldice/timeout > /dev/null;
           fi
           
+          sleep ${SLEEP_INTERVAL:-5};
         done
 
 volumes:

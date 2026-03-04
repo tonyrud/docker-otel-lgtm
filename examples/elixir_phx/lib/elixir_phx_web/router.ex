@@ -11,7 +11,6 @@ defmodule ElixirPhxWeb.Router do
     get "/", HealthController, :check
 
     # Dice roll endpoint for generating traces
-    get "/rolldice", DiceController, :roll
     get "/rolldice/:sides", DiceController, :roll
   end
 end

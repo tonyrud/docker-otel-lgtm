@@ -7,9 +7,18 @@ LOCAL_VOLUME=${PWD}/container
 # Only set this to "true" if you built the image with the 'build-lgtm.sh' script
 USE_LOCAL_IMAGE=${2:-false}
 
-for dir in grafana prometheus loki; do
+for dir in grafana prometheus loki tempo; do
 	test -d "${LOCAL_VOLUME}"/${dir} || mkdir -p "${LOCAL_VOLUME}"/${dir}
 done
+
+# Fix Grafana permissions (Grafana runs as UID 472 in container)
+if [[ ! -f "${LOCAL_VOLUME}/grafana/grafana.db" ]]; then
+	echo "Setting up Grafana data directory permissions..."
+	chmod 755 "${LOCAL_VOLUME}/grafana"
+	# Create initial directory structure if it doesn't exist
+	mkdir -p "${LOCAL_VOLUME}/grafana/plugins"
+	chmod -R 777 "${LOCAL_VOLUME}/grafana" # Permissive for development
+fi
 
 test -f .env || touch .env
 
@@ -76,8 +85,12 @@ $RUNTIME container run \
 	-v "${LOCAL_VOLUME}"/grafana:/data/grafana:"${MOUNT_OPTS}" \
 	-v "${LOCAL_VOLUME}"/prometheus:/data/prometheus:"${MOUNT_OPTS}" \
 	-v "${LOCAL_VOLUME}"/loki:/data/loki:"${MOUNT_OPTS}" \
+	-v "${LOCAL_VOLUME}"/tempo:/data/tempo:"${MOUNT_OPTS}" \
 	-v "${PWD}"/docker/otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml \
 	-v "${PWD}"/examples/elixir_phx/log:/var/log/elixir_phx:ro \
 	-e GF_PATHS_DATA=/data/grafana \
+	-e GF_PATHS_LOGS=/data/grafana/log \
+	-e GF_PATHS_PLUGINS=/data/grafana/plugins \
+	-e GF_PATHS_PROVISIONING=/data/grafana/provisioning \
 	--env-file .env \
 	"$IMAGE"

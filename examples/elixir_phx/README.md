@@ -23,23 +23,17 @@ Start db and phx app
 
 Now you can visit [`http://localhost:4000/rolldice`](http://localhost:4000/rolldice) from your browser
 
-## Generate Traffic
-
-From the root repo dir
+## Simulate Traffic
 
 ```bash
-./generate-traffic.sh
-```
-
-Or an ab traffic simulation
-
-```bash
-ab -n 100 -c 5 http://127.0.0.1:4000/rolldice
+docker compose up traffic
 ```
 
 ## TODOs
 
 - Ecto examples with SQL statements
+- Add metrics
+- Add sampling examples
 - Examples with db.connection errors as well. Show the SQL statment that failed on timeouts
 - Make an external call via Req to see tracing across services
-- Move to docker compose([example with full otel/lgtm and traffic generation](https://github.com/causely-oss/slow-query-lab/blob/main/docker-compose.yml))
+- Move to docker compose for single start all cmd

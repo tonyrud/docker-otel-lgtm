@@ -47,8 +47,7 @@ mix setup
 
 log_message "Starting Phoenix server with OpenTelemetry..."
 log_message "Server will be available at: http://localhost:4000"
-log_message "Dice roll: http://localhost:4000/rolldice"
-log_message "Custom dice: http://localhost:4000/api/dice/20"
+log_message "Dice roll: http://localhost:4000/rolldice/12"
 
 # Start the Phoenix server
 iex -S mix phx.server

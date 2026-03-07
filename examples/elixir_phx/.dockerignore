@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# Logs
+log/
+logs/
+*.log
+
+# Dependencies
+_build/
+deps/
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose*
+.dockerignore
+
+# Elixir/Phoenix specific
+.elixir_ls/
+erl_crash.dump
+
+# Test files
+cover/
+doc/
+
+# Temporary files
+tmp/
+temp/

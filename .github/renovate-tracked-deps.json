@@ -4,9 +4,24 @@
       "grafana/flint"
     ]
   },
+  ".github/workflows/acceptance-tests.yml": {
+    "regex": [
+      "mise"
+    ]
+  },
+  ".github/workflows/container-scan.yml": {
+    "regex": [
+      "trivy"
+    ]
+  },
   ".github/workflows/ghcr-image-build-and-publish.yml": {
     "regex": [
       "cosign"
+    ]
+  },
+  ".github/workflows/lint.yml": {
+    "regex": [
+      "mise"
     ]
   },
   ".github/workflows/release.yml": {
@@ -37,6 +52,11 @@
       "mcr.microsoft.com/dotnet/sdk"
     ]
   },
+  "examples/dotnet/docker-compose.yml": {
+    "docker-compose": [
+      "grafana/otel-lgtm"
+    ]
+  },
   "examples/dotnet/rolldice.csproj": {
     "nuget": [
       "OpenTelemetry.Exporter.Console",
@@ -53,6 +73,11 @@
     ],
     "regex": [
       "opentelemetry-ebpf-profiler"
+    ]
+  },
+  "examples/ebpf-profiler/docker-compose.yml": {
+    "docker-compose": [
+      "grafana/otel-lgtm"
     ]
   },
   "examples/ebpf-profiler/generate-traffic.Dockerfile": {
@@ -179,6 +204,11 @@
       "express"
     ]
   },
+  "examples/obi/docker-compose.yaml": {
+    "docker-compose": [
+      "grafana/otel-lgtm"
+    ]
+  },
   "examples/obi/dotnet/Dockerfile": {
     "dockerfile": [
       "mcr.microsoft.com/dotnet/aspnet",
@@ -215,7 +245,15 @@
       "express"
     ]
   },
+  "examples/obi/python.Dockerfile": {
+    "dockerfile": [
+      "python"
+    ]
+  },
   "examples/python/Dockerfile": {
+    "dockerfile": [
+      "python"
+    ],
     "regex": [
       "opentelemetry-distro"
     ]

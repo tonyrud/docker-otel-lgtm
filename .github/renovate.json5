@@ -1,6 +1,6 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: ["config:recommended", "customManagers:dockerfileVersions", "customManagers:githubActionsVersions", "github>grafana/flint"],
+  extends: ["config:best-practices", "config:recommended", "customManagers:dockerfileVersions", "customManagers:githubActionsVersions", "github>grafana/flint"],
   branchPrefix: "grafanarenovatebot/",
   dependencyDashboard: true,
   platformCommit: "enabled",
@@ -23,7 +23,7 @@
       ignoreUnstable: false,
     },
     {
-      matchPackageNames: ["otel/ebpf-instrument", "grafana/grafana", "grafana/loki", "grafana/pyroscope", "grafana/tempo", "open-telemetry/opentelemetry-collector-releases", "prometheus/prometheus"],
+      matchPackageNames: ["grafana/grafana", "grafana/loki", "grafana/pyroscope", "grafana/tempo", "open-telemetry/opentelemetry-collector-releases", "open-telemetry/opentelemetry-ebpf-instrumentation", "prometheus/prometheus"],
       labels: ["docker-dependency"],
     },
     {

@@ -3,6 +3,26 @@
 # Use environment variable with default fallback
 SLEEP_INTERVAL=${SLEEP_INTERVAL:-2}
 
+echo "Waiting for Phoenix server at http://127.0.0.1:4000/ to be ready..."
+
+# Wait for Phoenix server to be accessible (max 30 attempts)
+MAX_ATTEMPTS=30
+ATTEMPT=1
+while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+  if curl -f -s http://host.docker.internal:4000/ > /dev/null 2>&1; then
+    echo "Phoenix server is ready!"
+    break
+  fi
+  echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Phoenix server not ready, waiting..."
+  sleep 2
+  ATTEMPT=$((ATTEMPT + 1))
+done
+
+if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
+  echo "ERROR: Phoenix server at http://127.0.0.1:4000/ did not respond after $MAX_ATTEMPTS attempts"
+  exit 1
+fi
+
 echo "Generating traffic to Elixir Phoenix dice server with ${SLEEP_INTERVAL}s intervals"
 
 # Pre-calculate interval values to avoid arithmetic issues

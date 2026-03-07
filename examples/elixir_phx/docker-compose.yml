@@ -41,10 +41,8 @@ services:
 
   traffic:
     image: curlimages/curl:8.10.1
-    depends_on:
-      - elixir_phx
     environment:
-      SLEEP_INTERVAL: "2"
+      SLEEP_INTERVAL: "5" # seconds to wait between requests
     volumes:
       - ./generate-traffic.sh:/generate-traffic.sh:ro
     command: ["sh", "/generate-traffic.sh"]

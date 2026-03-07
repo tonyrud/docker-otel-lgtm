@@ -23,8 +23,6 @@ services:
       db:
         condition: service_healthy
 
-  # docker compose exec -it db psql -U postgres
-  # docker compose up db --remove-orphans -d
   db:
     image: postgres:15-alpine
     environment:

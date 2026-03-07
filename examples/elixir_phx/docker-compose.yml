@@ -8,11 +8,11 @@ services:
     environment:
       OTEL_SERVICE_NAME: "elixir-phx-dice-server"
       OTEL_SERVICE_VERSION: "0.1.0"
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://host.docker.internal:4318
-      OTEL_METRIC_EXPORT_INTERVAL: "5000" # so we don't have to wait 60s for metrics
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://lgtm:4318
+      OTEL_METRIC_EXPORT_INTERVAL: "5000"
       MIX_ENV: dev
       PHX_SERVER: true
-      # JSON_LOGGER: "true" # Uncomment to enable JSON logs in dev console, in addition to file logging
+      # JSON_LOGGER: "true" # Uncomment to enable JSON logs in dev console, in addition to file based logging
       ERL_AFLAGS: -kernel shell_history enabled
       DB_HOST: db
     ports:
@@ -51,6 +51,29 @@ services:
     command: ["sh", "/generate-traffic.sh"]
     depends_on:
       - app
+      - lgtm
+
+  lgtm:
+    image: docker.io/grafana/otel-lgtm:latest
+    container_name: lgtm
+    ports:
+      - "3000:3000"
+      - "4040:4040"
+      - "4317:4317"
+      - "4318:4318"
+      - "9090:9090"
+    volumes:
+      - ../../container/grafana:/data/grafana
+      - ../../container/prometheus:/data/prometheus
+      - ../../container/loki:/data/loki
+      - ../../container/tempo:/data/tempo
+      - ../../docker/otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml
+      - ./log:/var/log/elixir_phx:ro
+    environment:
+      - GF_PATHS_DATA=/data/grafana
+      - GF_PATHS_LOGS=/data/grafana/log
+      - GF_PATHS_PLUGINS=/data/grafana/plugins
+      - GF_PATHS_PROVISIONING=/data/grafana/provisioning
 
 volumes:
   postgres_data:

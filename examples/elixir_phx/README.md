@@ -21,12 +21,26 @@ Start db and phx app
 ./run.sh
 ```
 
+psql into database service
+
+```bash
+docker compose exec -it db psql -U postgres
+```
+
 Now you can visit [`http://localhost:4000/rolldice`](http://localhost:4000/rolldice) from your browser
 
 ## Simulate Traffic
 
+Defaults to 2s interval between requests
+
 ```bash
 docker compose up traffic
+```
+
+Slower traffic interval
+
+```bash
+SLEEP_INTERVAL=10 docker compose up traffic
 ```
 
 ## TODOs

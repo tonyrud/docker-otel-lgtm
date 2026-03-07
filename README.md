@@ -267,6 +267,7 @@ Each example uses a different application port
 | Python  | `curl http://127.0.0.1:8082/rolldice` |
 | .NET    | `curl http://127.0.0.1:8083/rolldice` |
 | Node.js | `curl http://127.0.0.1:8084/rolldice` |
+| Elixir  | `curl http://127.0.0.1:4000/rolldice` |
 
 ## Verifying Container Image Signatures
 

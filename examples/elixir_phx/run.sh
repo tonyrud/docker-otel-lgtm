@@ -19,6 +19,12 @@ export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
 # Enable JSON logging for OpenTelemetry collector and dev console
 export JSON_LOGGER="true"
 
+# Clean up previous log file to start fresh
+if [ -f "log/elixir_phx.log" ]; then
+  log_message "Removing previous log file for clean start..."
+  rm -f log/elixir_phx.log
+fi
+
 # Check if Docker is running
 #Open Docker, only if is not running
 if (! docker stats --no-stream &>/dev/null ); then
@@ -34,6 +40,7 @@ fi
 
 log_message "Starting PostgreSQL database using Docker..."
 docker compose up db --remove-orphans -d
+docker compose up traffic --remove-orphans -d
 
 # Check for otel stuff
 if (! docker ps --filter "name=lgtm" --filter "status=running" --quiet | grep -q .); then

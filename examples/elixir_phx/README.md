@@ -18,7 +18,7 @@ Start Otel services
 Start db, traffic generator, and phx app
 
 ```bash
-./run.sh
+docker compose up --build
 ```
 
 Now you can visit [`http://localhost:4000/rolldice`](http://localhost:4000/rolldice) from your browser
@@ -27,6 +27,12 @@ psql into database service
 
 ```bash
 docker compose exec -it db psql -U postgres
+```
+
+Stop docker services
+
+```bash
+docker compose down
 ```
 
 ## TODOs

@@ -1,6 +1,11 @@
 defmodule ElixirPhx.JsonLogger do
   @moduledoc """
   Simple JSON formatter wrapper for LoggerFileBackend compatibility.
+
+  This is a custom formatter for OTel collector scraping. I was unable to get any `LoggerJSON.Formatters` working with `LoggerFileBackend`,
+  so this is a simple wrapper around `Jason` to format logs as JSON.
+
+  It also includes some basic metadata filtering to ensure only JSON-serializable metadata is included in the log output.
   """
 
   def format(level, message, timestamp, metadata) do

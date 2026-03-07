@@ -15,8 +15,6 @@ services:
       # JSON_LOGGER: "true" # Uncomment to enable JSON logs in dev console, in addition to file logging
       ERL_AFLAGS: -kernel shell_history enabled
       DB_HOST: db
-      # Database is optional for this example, but keeping for completeness
-      # DATABASE_URL: ecto://postgres:postgres@db:5432/elixir_phx_dev
     ports:
       - "4000:4000"
     volumes:

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# starts as part of docker compose to generate traffic to the Phoenix server
+
 # Use environment variable with default fallback
 SLEEP_INTERVAL=${SLEEP_INTERVAL:-2}
 

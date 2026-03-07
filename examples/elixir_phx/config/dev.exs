@@ -17,9 +17,9 @@ config :elixir_phx, ElixirPhx.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :elixir_phx, ElixirPhxWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
+  # Binding to all interfaces to allow access from host
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
+  http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("PORT") || "4000")],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -68,7 +68,6 @@ if System.get_env("JSON_LOGGER") == "true" do
   IO.puts("Using JSON logger for development")
   config :logger, :default_handler, formatter: {LoggerJSON.Formatters.Basic, metadata: :all}
 
-  # Alternative: config :logger, :default_handler, formatter: {ElixirPhx.JsonLogger, metadata: :all}
   # File logging with JSON format for OpenTelemetry collector scraping
   config :logger, :file_log,
     path: "log/elixir_phx.log",

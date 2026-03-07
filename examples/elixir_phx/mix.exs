@@ -75,7 +75,6 @@ defmodule ElixirPhx.MixProject do
       {:opentelemetry_cowboy, "~> 0.3"},
       {:opentelemetry_bandit, "~> 0.2"},
       {:opentelemetry_semantic_conventions, "~> 1.0"},
-      # OTel integration with Logger metadata
       {:opentelemetry_process_propagator, "~> 0.3"},
       {:opentelemetry_telemetry, "~> 1.1"}
     ]

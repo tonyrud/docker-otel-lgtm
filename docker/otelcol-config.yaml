@@ -12,7 +12,7 @@ receivers:
   # File log receiver for scraping Elixir application logs
   filelog:
     include:
-      - /var/log/elixir_phx/*.log
+      - /app/log/*.log
     start_at: end
     storage: file_storage
     operators:

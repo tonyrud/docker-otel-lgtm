@@ -12,10 +12,8 @@ MAX_ATTEMPTS=30
 ATTEMPT=1
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
   if curl -f -s http://host.docker.internal:4000/ > /dev/null 2>&1; then
-    echo "Phoenix server is ready!"
     break
   fi
-  echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Phoenix server not ready, waiting..."
   sleep 2
   ATTEMPT=$((ATTEMPT + 1))
 done

@@ -64,12 +64,15 @@ config :logger,
     elixir_version: System.version()
   ]
 
+# logs rotate at 1MB to avoid huge log files during development, and we keep 1 old log file for otel collector scraping
+log_max_size_mb = 1
+
 # File logging with JSON format for OpenTelemetry collector scraping
 config :logger, :file_log,
   path: "log/elixir_phx.log",
   format: {ElixirPhx.JsonLogger, :format},
   metadata: :all,
-  rotate: %{max_bytes: 10_485_760, keep: 5}
+  rotate: %{max_bytes: log_max_size_mb * 1024 * 1024, keep: 1}
 
 if System.get_env("JSON_LOGGER") == "true" do
   IO.puts("Using JSON logger for development")

@@ -34,6 +34,7 @@ defmodule ElixirPhx.JsonLogger do
   defp json_serializable?(value) when is_boolean(value), do: true
   defp json_serializable?(nil), do: true
   defp json_serializable?(value) when is_list(value), do: Enum.all?(value, &json_serializable?/1)
+  defp json_serializable?(%_{} = _struct), do: false
 
   defp json_serializable?(value) when is_map(value),
     do: Enum.all?(value, fn {k, v} -> json_serializable?(k) and json_serializable?(v) end)

@@ -1,7 +1,6 @@
 ---
 services:
-  # WIP: only using regular mix app at this time!!
-  elixir_phx:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +12,7 @@ services:
       OTEL_METRIC_EXPORT_INTERVAL: "5000" # so we don't have to wait 60s for metrics
       MIX_ENV: dev
       PHX_SERVER: true
-      JSON_LOGGER: "true"
+      # JSON_LOGGER: "true" # Uncomment to enable JSON logs in dev console, in addition to file logging
       ERL_AFLAGS: -kernel shell_history enabled
       DB_HOST: db
       # Database is optional for this example, but keeping for completeness
@@ -21,7 +20,10 @@ services:
     ports:
       - "4000:4000"
     volumes:
+      - .:/app
       - ./log:/app/log
+      - ./_build:/app/_build
+      - ./deps:/app/deps
     depends_on:
       db:
         condition: service_healthy
@@ -49,6 +51,8 @@ services:
     volumes:
       - ./generate-traffic.sh:/generate-traffic.sh:ro
     command: ["sh", "/generate-traffic.sh"]
+    depends_on:
+      - app
 
 volumes:
   postgres_data:

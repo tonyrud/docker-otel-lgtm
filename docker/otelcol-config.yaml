@@ -79,6 +79,10 @@ exporters:
     endpoint: http://127.0.0.1:4040
     tls:
       insecure: true
+  # External exporter for services like Honeycomb (optional)
+  otlphttp/external:
+    endpoint: ${env:OTEL_EXPORTER_OTLP_ENDPOINT}
+    headers: ${env:OTEL_EXPORTER_OTLP_HEADERS}
   debug/metrics:
     verbosity: detailed
   debug/traces:
@@ -92,18 +96,18 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlphttp/traces]
+      exporters: [otlphttp/traces, otlphttp/external]
       #exporters: [otlphttp/traces,debug/traces]
     metrics:
       receivers: [otlp, prometheus/collector]
       processors: [batch]
-      exporters: [otlphttp/metrics]
+      exporters: [otlphttp/metrics, otlphttp/external]
       #exporters: [otlphttp/metrics,debug/metrics]
     logs:
       # Both OTLP and file-based log collection
       receivers: [otlp, filelog]
       processors: [batch]
-      exporters: [otlphttp/logs]
+      exporters: [otlphttp/logs, otlphttp/external]
       #exporters: [otlphttp/logs,debug/logs]
     profiles:
       receivers: [otlp]

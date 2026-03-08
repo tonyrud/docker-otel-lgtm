@@ -41,7 +41,28 @@ Stop docker services
 docker compose down
 ```
 
-## Grafana
+## External Telemetry Services
+
+By default, the LGTM collector only stores telemetry locally (Grafana, Tempo, Loki).
+To also forward telemetry to external services like Honeycomb, Grafana Cloud, or other OTLP-compatible endpoints:
+
+### Setup
+
+1. Copy the example configuration:
+
+   ```bash
+   cp .env.lgtm.example .env.lgtm
+   ```
+
+2. Edit `.env.lgtm` with your service credentials
+
+3. Restart lgtm services:
+
+   ```bash
+   docker compose up -d lgtm
+   ```
+
+### Grafana Notes
 
 You'll want to use the settings below for proper traces -> logs correlation
 

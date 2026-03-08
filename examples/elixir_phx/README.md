@@ -41,6 +41,14 @@ Stop docker services
 docker compose down
 ```
 
+## Grafana
+
+You'll want to use the settings below for proper traces -> logs correlation
+
+Edit these settings here: [http://localhost:3000/connections/datasources/edit/tempo](http://localhost:3000/connections/datasources/edit/tempo)
+
+![image to tempo config](../../img/grafana-tempo-config.png)
+
 ## TODOs
 
 - Add metrics

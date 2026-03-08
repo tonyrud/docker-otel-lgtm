@@ -17,9 +17,9 @@ config :elixir_phx, ElixirPhx.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :elixir_phx, ElixirPhxWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
+  # Binding to all interfaces to allow access from host
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
+  http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("PORT") || "4000")],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -64,17 +64,19 @@ config :logger,
     elixir_version: System.version()
   ]
 
+# logs rotate at 1MB to avoid huge log files during development, and we keep 1 old log file for otel collector scraping
+log_max_size_mb = 1
+
+# File logging with JSON format for OpenTelemetry collector scraping
+config :logger, :file_log,
+  path: "log/elixir_phx.log",
+  format: {ElixirPhx.JsonLogger, :format},
+  metadata: :all,
+  rotate: %{max_bytes: log_max_size_mb * 1024 * 1024, keep: 1}
+
 if System.get_env("JSON_LOGGER") == "true" do
   IO.puts("Using JSON logger for development")
   config :logger, :default_handler, formatter: {LoggerJSON.Formatters.Basic, metadata: :all}
-
-  # Alternative: config :logger, :default_handler, formatter: {ElixirPhx.JsonLogger, metadata: :all}
-  # File logging with JSON format for OpenTelemetry collector scraping
-  config :logger, :file_log,
-    path: "log/elixir_phx.log",
-    format: {ElixirPhx.JsonLogger, :format},
-    metadata: :all,
-    rotate: %{max_bytes: 10_485_760, keep: 5}
 else
   # Do not include metadata nor timestamps in development logs
   config :logger, :default_formatter, format: "[$level] $message\n"

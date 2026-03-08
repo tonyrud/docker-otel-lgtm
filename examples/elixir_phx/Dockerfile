@@ -22,16 +22,19 @@ FROM build AS dev
 
 ENV MIX_ENV=dev
 
-# Copy the mix files and install dependencies
+# Copy mix files first for better caching
 COPY mix.exs mix.lock ./
 
-COPY config/config.exs config/${MIX_ENV}.exs config/
-
+# Install dependencies (this layer will be cached unless mix files change)
 RUN mix deps.get && mix deps.compile
 
-# Copy the source code
+# Copy config files
+COPY config/config.exs config/${MIX_ENV}.exs config/
+
+# Copy static assets
 COPY priv priv
 
+# Copy application source code (this will invalidate cache when app code changes)
 COPY lib lib
 
 # Compile the application

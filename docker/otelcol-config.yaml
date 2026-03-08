@@ -25,20 +25,20 @@ receivers:
       - type: move
         from: attributes.metadata.otel_trace_id
         to: attributes["trace_id"]
-        if: 'attributes.metadata?.otel_trace_id != nil'
+        if: 'attributes.metadata.otel_trace_id != nil'
       - type: move
         from: attributes.metadata.otel_span_id  
         to: attributes["span_id"]
-        if: 'attributes.metadata?.otel_span_id != nil'
+        if: 'attributes.metadata.otel_span_id != nil'
       # Extract request_id from metadata if present
       - type: move
         from: attributes.metadata.request_id
         to: attributes["request_id"]
-        if: 'attributes.metadata?.request_id != nil'
+        if: 'attributes.metadata.request_id != nil'
       - type: move
         from: attributes.metadata.service_name
         to: resource["service.name"]
-        if: 'attributes.metadata?.service_name != nil'
+        if: 'attributes.metadata.service_name != nil'
   
   prometheus/collector:
     config:
@@ -60,7 +60,7 @@ extensions:
     create_directory: true
 
 processors:
-  batch:
+  batch: {}
   
 exporters:
   otlphttp/metrics:

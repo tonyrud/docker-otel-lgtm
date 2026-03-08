@@ -7,26 +7,32 @@
 
 ## Local Dev
 
-Start Otel services
-
-```bash
-./run-lgtm.sh
-```
-
 `cd examples/elixir_phx`
 
-Start db and phx app
+Start everything
 
 ```bash
-./run.sh
+docker compose up --build
 ```
 
 Now you can visit [`http://localhost:4000/rolldice`](http://localhost:4000/rolldice) from your browser
 
-## Simulate Traffic
+start an iex session
 
 ```bash
-docker compose up traffic
+docker compose exec -it app iex
+```
+
+start a psql session
+
+```bash
+docker compose exec -it db psql -U postgres
+```
+
+Stop docker services
+
+```bash
+docker compose down
 ```
 
 ## TODOs

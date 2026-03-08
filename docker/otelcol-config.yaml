@@ -27,7 +27,7 @@ receivers:
         to: attributes["trace_id"]
         if: 'attributes.metadata.otel_trace_id != nil'
       - type: move
-        from: attributes.metadata.otel_span_id  
+        from: attributes.metadata.otel_span_id
         to: attributes["span_id"]
         if: 'attributes.metadata.otel_span_id != nil'
       # Extract request_id from metadata if present

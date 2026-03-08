@@ -99,3 +99,24 @@ if config_env() == :prod do
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
 end
+
+# OpenTelemetry configuration (runtime only - requires environment variables)
+service_name = System.fetch_env!("OTEL_SERVICE_NAME")
+
+# Add service_name to logger metadata
+config :logger, metadata: [service_name: service_name]
+
+config :opentelemetry_exporter,
+  otlp_protocol: :http_protobuf,
+  otlp_endpoint: System.fetch_env!("OTEL_EXPORTER_OTLP_ENDPOINT")
+
+config :opentelemetry,
+  resource: [
+    service: [
+      version: System.get_env("OTEL_SERVICE_VERSION", "0.1.0"),
+      namespace: System.get_env("OTEL_SERVICE_NAMESPACE", "development")
+    ]
+  ],
+  span_processor: :batch,
+  traces_exporter: :otlp,
+  logs_exporter: :otlp

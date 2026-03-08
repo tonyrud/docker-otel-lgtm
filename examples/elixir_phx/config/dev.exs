@@ -52,14 +52,11 @@ config :elixir_phx, ElixirPhxWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :elixir_phx, dev_routes: true
 
-service_name = System.get_env("OTEL_SERVICE_NAME") || "elixir-phx-dev"
-
 config :logger,
   level: :debug,
   backends: [:console, {LoggerFileBackend, :file_log}],
-  # Global metadata applied to all log entries
+  # Global metadata applied to all log entries (service_name set in runtime.exs)
   metadata: [
-    service_name: service_name,
     deployment_environment: "dev",
     elixir_version: System.version()
   ]
@@ -91,18 +88,4 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix, :logger, false
 
-# OpenTelemetry development configuration
-config :opentelemetry_exporter,
-  otlp_protocol: :http_protobuf,
-  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
-
-config :opentelemetry,
-  resource: [
-    service: [
-      version: "0.1.0",
-      namespace: "development"
-    ]
-  ],
-  span_processor: :batch,
-  traces_exporter: :otlp,
-  logs_exporter: :otlp
+# OpenTelemetry configuration moved to runtime.exs

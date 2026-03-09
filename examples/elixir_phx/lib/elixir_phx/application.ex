@@ -28,7 +28,8 @@ defmodule ElixirPhx.Application do
   defp init_opentelemetry do
     OpentelemetryBandit.setup()
     OpentelemetryPhoenix.setup(adapter: :bandit)
-    # TODO: the query span do not have SQL statements
+    # OpentelemetryLoggerMetadata.setup()
+    # TODO: query spans do not have SQL statements
     # Adds extra query spans to every request as well??
     # OpentelemetryEcto.setup([:elixir_phx, :repo], db_statement: true)
   end

@@ -73,8 +73,7 @@ defmodule ElixirPhx.MixProject do
       {:opentelemetry_phoenix, "~> 2.0"},
       {:opentelemetry_ecto, "~> 1.2"},
       {:opentelemetry_cowboy, "~> 0.3"},
-      {:opentelemetry_bandit, "~> 0.2"},
-      {:opentelemetry_semantic_conventions, "~> 1.0"}
+      {:opentelemetry_bandit, "~> 0.2"}
     ]
   end
 

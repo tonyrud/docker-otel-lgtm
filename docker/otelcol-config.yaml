@@ -25,20 +25,20 @@ receivers:
       - type: move
         from: attributes.metadata.otel_trace_id
         to: attributes["trace_id"]
-        if: 'attributes.metadata?.otel_trace_id != nil'
+        if: 'attributes.metadata.otel_trace_id != nil'
       - type: move
-        from: attributes.metadata.otel_span_id  
+        from: attributes.metadata.otel_span_id
         to: attributes["span_id"]
-        if: 'attributes.metadata?.otel_span_id != nil'
+        if: 'attributes.metadata.otel_span_id != nil'
       # Extract request_id from metadata if present
       - type: move
         from: attributes.metadata.request_id
         to: attributes["request_id"]
-        if: 'attributes.metadata?.request_id != nil'
+        if: 'attributes.metadata.request_id != nil'
       - type: move
         from: attributes.metadata.service_name
         to: resource["service.name"]
-        if: 'attributes.metadata?.service_name != nil'
+        if: 'attributes.metadata.service_name != nil'
   
   prometheus/collector:
     config:
@@ -60,7 +60,7 @@ extensions:
     create_directory: true
 
 processors:
-  batch:
+  batch: {}
   
 exporters:
   otlphttp/metrics:
@@ -79,6 +79,10 @@ exporters:
     endpoint: http://127.0.0.1:4040
     tls:
       insecure: true
+  # External exporter for services like Honeycomb (commented out - enable via .env.lgtm)
+  # otlphttp/external:
+  #   endpoint: ${env:OTEL_EXPORTER_OTLP_ENDPOINT}
+  #   headers: ${env:OTEL_EXPORTER_OTLP_HEADERS}
   debug/metrics:
     verbosity: detailed
   debug/traces:
@@ -93,17 +97,26 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlphttp/traces]
+      # To enable external export, uncomment the line below and comment the line above:
+      #exporters: [otlphttp/traces, otlphttp/external]
+      # For debug output, use:
       #exporters: [otlphttp/traces,debug/traces]
     metrics:
       receivers: [otlp, prometheus/collector]
       processors: [batch]
       exporters: [otlphttp/metrics]
+      # To enable external export, uncomment the line below and comment the line above:
+      #exporters: [otlphttp/metrics, otlphttp/external]
+      # For debug output, use:
       #exporters: [otlphttp/metrics,debug/metrics]
     logs:
       # Both OTLP and file-based log collection
       receivers: [otlp, filelog]
       processors: [batch]
       exporters: [otlphttp/logs]
+      # To enable external export, uncomment the line below and comment the line above:
+      #exporters: [otlphttp/logs, otlphttp/external]
+      # For debug output, use:
       #exporters: [otlphttp/logs,debug/logs]
     profiles:
       receivers: [otlp]

@@ -17,9 +17,9 @@ config :elixir_phx, ElixirPhx.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :elixir_phx, ElixirPhxWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
+  # Binding to all interfaces to allow access from host
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
+  http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("PORT") || "4000")],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -52,29 +52,28 @@ config :elixir_phx, ElixirPhxWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :elixir_phx, dev_routes: true
 
-service_name = System.get_env("OTEL_SERVICE_NAME") || "elixir-phx-dev"
-
 config :logger,
   level: :debug,
   backends: [:console, {LoggerFileBackend, :file_log}],
-  # Global metadata applied to all log entries
+  # Global metadata applied to all log entries (service_name set in runtime.exs)
   metadata: [
-    service_name: service_name,
     deployment_environment: "dev",
     elixir_version: System.version()
   ]
 
+# logs rotate at 1MB to avoid huge log files during development, and we keep 1 old log file for otel collector scraping
+log_max_size_mb = 1
+
+# File logging with JSON format for OpenTelemetry collector scraping
+config :logger, :file_log,
+  path: "log/elixir_phx.log",
+  format: {ElixirPhx.JsonLogger, :format},
+  metadata: :all,
+  rotate: %{max_bytes: log_max_size_mb * 1024 * 1024, keep: 1}
+
 if System.get_env("JSON_LOGGER") == "true" do
   IO.puts("Using JSON logger for development")
   config :logger, :default_handler, formatter: {LoggerJSON.Formatters.Basic, metadata: :all}
-
-  # Alternative: config :logger, :default_handler, formatter: {ElixirPhx.JsonLogger, metadata: :all}
-  # File logging with JSON format for OpenTelemetry collector scraping
-  config :logger, :file_log,
-    path: "log/elixir_phx.log",
-    format: {ElixirPhx.JsonLogger, :format},
-    metadata: :all,
-    rotate: %{max_bytes: 10_485_760, keep: 5}
 else
   # Do not include metadata nor timestamps in development logs
   config :logger, :default_formatter, format: "[$level] $message\n"
@@ -89,18 +88,4 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix, :logger, false
 
-# OpenTelemetry development configuration
-config :opentelemetry_exporter,
-  otlp_protocol: :http_protobuf,
-  otlp_endpoint: System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
-
-config :opentelemetry,
-  resource: [
-    service: [
-      version: "0.1.0",
-      namespace: "development"
-    ]
-  ],
-  span_processor: :batch,
-  traces_exporter: :otlp,
-  logs_exporter: :otlp
+# OpenTelemetry configuration moved to runtime.exs

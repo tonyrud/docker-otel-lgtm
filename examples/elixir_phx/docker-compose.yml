@@ -20,8 +20,9 @@ services:
     volumes:
       - .:/app
       - ./log:/app/log
-      - ./_build:/app/_build
-      - ./deps:/app/deps
+      # Use anonymous volumes to protect container's compiled dependencies
+      - /app/_build
+      - /app/deps
     depends_on:
       db:
         condition: service_healthy
@@ -51,7 +52,6 @@ services:
     command: ["sh", "/generate-traffic.sh"]
     depends_on:
       - app
-      - lgtm
 
   lgtm:
     image: docker.io/grafana/otel-lgtm:latest
@@ -68,6 +68,7 @@ services:
       - ../../container/loki:/data/loki
       - ../../container/tempo:/data/tempo
       - ../../docker/otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml
+      - ../../docker/grafana-datasources.yaml:/data/grafana/provisioning/datasources/datasources.yaml:ro
       - ./log:/var/log/elixir_phx:ro
     environment:
       - GF_PATHS_DATA=/data/grafana

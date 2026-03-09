@@ -23,6 +23,8 @@ datasources:
         customQuery: true
         datasourceUid: "loki"
         query: '{$${__tags}} | trace_id = "$${__trace.traceId}"'
+        spanStartTimeShift: "-1m"
+        spanEndTimeShift: "1m"
         tags:
           - key: "service.name"
             value: "service_name"

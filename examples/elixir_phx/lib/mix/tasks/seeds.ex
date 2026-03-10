@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.Seeds do
   @moduledoc """
   Run database seeds without starting the Phoenix web server.
-  
+
   Usage:
     mix seeds
   """
@@ -12,15 +12,16 @@ defmodule Mix.Tasks.Seeds do
   def run(_) do
     # Start only the necessary applications, excluding the web server
     Mix.Task.run("app.config")
-    
+
     # Start Ecto and related dependencies
     {:ok, _} = Application.ensure_all_started(:ecto_sql)
-    
+
     # Start the Repo
     {:ok, _} = ElixirPhx.Repo.start_link()
-    
+
     # Load and run the seeds file
     seeds_file = "priv/repo/seeds.exs"
+
     if File.exists?(seeds_file) do
       Code.eval_file(seeds_file)
     else

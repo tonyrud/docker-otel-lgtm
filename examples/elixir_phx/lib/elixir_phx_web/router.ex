@@ -13,4 +13,13 @@ defmodule ElixirPhxWeb.Router do
     # Dice roll endpoint for generating traces
     get "/rolldice/:sides", DiceController, :roll
   end
+
+  scope "/api", ElixirPhxWeb do
+    pipe_through :api
+
+    # User endpoints
+    get "/users", UserController, :index
+    get "/users/:id", UserController, :show
+    post "/users", UserController, :create
+  end
 end

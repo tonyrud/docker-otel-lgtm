@@ -5,7 +5,7 @@
 # Use environment variable with default fallback
 SLEEP_INTERVAL=${SLEEP_INTERVAL:-2}
 
-echo "Waiting for Phoenix server at http://127.0.0.1:4000/ to be ready..."
+echo "Waiting for Phoenix server at http://localhost:4000/ to be ready..."
 
 # Wait for Phoenix server to be accessible (max 30 attempts)
 MAX_ATTEMPTS=30
@@ -19,7 +19,7 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
 done
 
 if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
-  echo "ERROR: Phoenix server at http://127.0.0.1:4000/ did not respond after $MAX_ATTEMPTS attempts"
+  echo "ERROR: Phoenix server at http://localhost:4000/ did not respond after $MAX_ATTEMPTS attempts"
   exit 1
 fi
 

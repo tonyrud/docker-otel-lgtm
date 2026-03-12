@@ -47,6 +47,12 @@ receivers:
           scrape_interval: 1s
           static_configs:
             - targets: ["127.0.0.1:8888"]
+        - job_name: "elixir-phoenix-app"
+          scrape_interval: 15s
+          static_configs:
+            - targets: ["app:9568"]
+          metrics_path: '/metrics'
+          scheme: 'http'
 
 extensions:
   health_check:

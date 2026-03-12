@@ -17,6 +17,7 @@ services:
       DB_HOST: db
     ports:
       - "4000:4000"
+      - "9568:9568" # Prometheus metrics endpoint
     volumes:
       - .:/app
       - ./log:/app/log

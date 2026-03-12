@@ -1,0 +1,43 @@
+---
+# OATS acceptance testing for Elixir Phoenix with Prometheus metrics
+# https://github.com/grafana/oats/tree/main/yaml
+oats-schema-version: 2
+docker-compose:
+  files:
+    - ./docker-compose.yml
+input:
+  - path: /rolldice/6
+  - path: /rolldice/12
+  - path: /rolldice/20
+expected:
+  traces:
+    # Test OpenTelemetry traces from Elixir Phoenix
+    - traceql: '{ span.name = "roll/2" }'
+      attributes:
+        dice.sides: 6
+        dice.type: custom
+    - traceql: '{ span.name = "GET /rolldice/:sides" }'
+      attributes:
+        http.method: GET
+  metrics:
+    # Test custom Prometheus metrics from Elixir app
+    - promql: "dice_rolls_total{}"
+      value: "> 0"
+    - promql: "dice_roll_value_bucket{}"
+      value: ">= 0"
+    - promql: "dice_processing_time_sum{}"
+      value: "> 0"
+    # Test VM metrics
+    - promql: "vm_memory_total_kilobytes{}"
+      value: "> 0"
+    - promql: "vm_total_run_queue_lengths_total{}"
+      value: ">= 0"
+    # Test Phoenix/HTTP metrics
+    - promql: "phoenix_endpoint_stop_duration_milliseconds_sum{}"
+      value: "> 0"
+    - promql: "phoenix_router_dispatch_stop_duration_milliseconds_sum{}"
+      value: "> 0"
+  logs:
+    # Test structured logs from Elixir application
+    - logql: '{service_name="elixir-phx-dice-server"}'
+      contains: "Got result"

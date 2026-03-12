@@ -12,6 +12,7 @@ defmodule ElixirPhxWeb.DiceController do
   end
 
   def roll(conn, %{"sides" => sides}) do
+    start_time = System.monotonic_time()
     sides_int = String.to_integer(sides)
 
     # Add custom span with attributes
@@ -24,6 +25,23 @@ defmodule ElixirPhxWeb.DiceController do
       result = roll_dice(sides_int)
 
       Logger.debug("Got result: #{result}")
+
+      # Emit telemetry events for metrics
+      result_range =
+        cond do
+          result <= sides_int / 3 -> "low"
+          result <= sides_int * 2 / 3 -> "medium"
+          true -> "high"
+        end
+
+      :telemetry.execute([:dice, :rolls], %{total: 1}, %{
+        sides: sides_int,
+        result_range: result_range
+      })
+
+      :telemetry.execute([:dice], %{roll_value: result}, %{
+        sides: sides_int
+      })
 
       # fast but random sleep to create some latency and variability in traces
 
@@ -41,6 +59,14 @@ defmodule ElixirPhxWeb.DiceController do
 
       # Simulate some processing time
       Process.sleep(sleep_time)
+
+      # Emit processing time telemetry
+      end_time = System.monotonic_time()
+      duration = System.convert_time_unit(end_time - start_time, :native, :millisecond)
+
+      :telemetry.execute([:dice], %{processing_time: duration}, %{
+        sides: sides_int
+      })
 
       conn
       |> put_status(:ok)

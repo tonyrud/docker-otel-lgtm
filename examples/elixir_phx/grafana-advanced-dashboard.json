@@ -1,0 +1,205 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Elixir Phoenix - Advanced Observability",
+    "tags": ["elixir", "otel", "traces", "alerts"],
+    "timezone": "browser",
+    "refresh": "5s",
+    "schemaVersion": 30,
+    "version": 1,
+    "time": {
+      "from": "now-30m",
+      "to": "now"
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "High Latency Events",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "enable": true,
+          "expr": "increase(dice_processing_time_simple_bucket{le=\"+Inf\"}[1m]) - increase(dice_processing_time_simple_bucket{le=\"1000\"}[1m]) > 0",
+          "iconColor": "red",
+          "name": "Slow Requests"
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "🎲 Dice Roll Activity",
+        "type": "timeseries",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "sum by (sides) (rate(dice_rolls_total[1m]))",
+            "interval": "",
+            "legendFormat": "{{sides}}-sided dice",
+            "refId": "A"
+          }
+        ],
+        "links": [
+          {
+            "title": "🔍 View Traces in Time Range",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"}\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "values": ["last", "max"] }
+        },
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": { "params": [2], "type": "gt" },
+              "operator": { "type": "and" },
+              "query": { "params": ["A", "5m", "now"] },
+              "reducer": { "type": "avg" },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "30s",
+          "frequency": "10s",
+          "handler": 1,
+          "name": "High Dice Roll Activity",
+          "noDataState": "no_data",
+          "notifications": []
+        }
+      },
+      {
+        "id": 2,
+        "title": "⚡ Processing Time Percentiles",
+        "type": "timeseries",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(dice_processing_time_simple_bucket[2m]))",
+            "legendFormat": "50th percentile",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(dice_processing_time_simple_bucket[2m]))",
+            "legendFormat": "95th percentile",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(dice_processing_time_simple_bucket[2m]))",
+            "legendFormat": "99th percentile",
+            "refId": "C"
+          }
+        ],
+        "links": [
+          {
+            "title": "🐌 Debug Slow Traces (>1s)",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"} | duration > 1s\"}]}]",
+            "targetBlank": true
+          },
+          {
+            "title": "⚡ View Fast Traces (<100ms)",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"} | duration < 100ms\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 100 },
+                { "color": "red", "value": 1000 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "🚨 Error Rate & Latency SLI",
+        "type": "stat",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(dice_processing_time_simple_bucket[5m]))",
+            "legendFormat": "95th Latency",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(dice_rolls_total[1m])",
+            "legendFormat": "Request Rate",
+            "refId": "B"
+          }
+        ],
+        "links": [
+          {
+            "title": "📊 SLI Investigation",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"} | duration > 500ms\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": { "h": 6, "w": 8, "x": 0, "y": 9 },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 100 },
+                { "color": "red", "value": 1000 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "🔥 Live Trace Stream",
+        "type": "logs",
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "targets": [
+          {
+            "expr": "{service_name=\"elixir-phx-dice-server\"} |= \"Rolling a\"",
+            "refId": "A"
+          }
+        ],
+        "links": [
+          {
+            "title": "🔍 Full Trace Context",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"}\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": { "h": 6, "w": 16, "x": 8, "y": 9 },
+        "options": {
+          "showTime": true,
+          "showLabels": false,
+          "showCommonLabels": false,
+          "wrapLogMessage": false,
+          "prettifyLogMessage": false,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      }
+    ]
+  },
+  "overwrite": true
+}

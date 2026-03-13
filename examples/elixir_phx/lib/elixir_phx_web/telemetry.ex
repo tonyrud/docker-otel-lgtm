@@ -12,8 +12,12 @@ defmodule ElixirPhxWeb.Telemetry do
       # Telemetry poller will execute the given period measurements
       # every 10_000ms. Learn more here: https://hexdocs.pm/telemetry_metrics
       {:telemetry_poller, measurements: periodic_measurements(), period: 10_000},
-      # Add Prometheus metrics reporter
-      {TelemetryMetricsPrometheus, metrics: metrics()}
+      # Add Prometheus metrics reporter with exemplar support
+      {
+        TelemetryMetricsPrometheus,
+        # Enable exemplar support (experimental)
+        metrics: metrics(), name: :prometheus_metrics, port: 9568, exemplars: true
+      }
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
@@ -57,7 +61,9 @@ defmodule ElixirPhxWeb.Telemetry do
       counter("vm.memory.count"),
       counter("vm.total_run_queue_lengths.count"),
 
-      # Custom Business Metrics
+      # Custom Business Metrics with Exemplar Support
+      # Removed trace_id/span_id as tags to avoid high cardinality
+      # Trace correlation will be handled via exemplars instead
       counter("dice.rolls.total",
         tags: [:sides, :result_range],
         description: "Total number of dice rolls"
@@ -74,6 +80,20 @@ defmodule ElixirPhxWeb.Telemetry do
         tags: [:sides],
         unit: {:native, :millisecond},
         description: "Time taken to process dice roll",
+        reporter_options: [
+          buckets: [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
+        ]
+      ),
+
+      # Production-friendly alternatives without trace correlation
+      counter("dice.rolls.simple",
+        tags: [:sides, :result_range],
+        description: "Total dice rolls (production-safe, no trace correlation)"
+      ),
+      distribution("dice.processing_time.simple",
+        tags: [:sides],
+        unit: {:native, :millisecond},
+        description: "Processing time (production-safe, no trace correlation)",
         reporter_options: [
           buckets: [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
         ]

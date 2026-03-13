@@ -1,6 +1,7 @@
 defmodule ElixirPhxWeb.DiceController do
   use ElixirPhxWeb, :controller
   require OpenTelemetry.Tracer, as: Tracer
+  require OpenTelemetry.Ctx, as: Ctx
 
   require Logger
 
@@ -26,7 +27,11 @@ defmodule ElixirPhxWeb.DiceController do
 
       Logger.debug("Got result: #{result}")
 
-      # Emit telemetry events for metrics
+      # Extract OpenTelemetry correlation data (for potential exemplar use)
+      trace_correlation = get_trace_correlation()
+      Logger.debug("Trace context: #{trace_correlation.trace_id}/#{trace_correlation.span_id}")
+
+      # Emit telemetry events for metrics (without trace_id tags for low cardinality)
       result_range =
         cond do
           result <= sides_int / 3 -> "low"
@@ -39,8 +44,15 @@ defmodule ElixirPhxWeb.DiceController do
         result_range: result_range
       })
 
-      :telemetry.execute([:dice], %{roll_value: result}, %{
+      # For distribution metrics, use 'value' as the measurement key
+      :telemetry.execute([:dice, :roll_value], %{value: result}, %{
         sides: sides_int
+      })
+
+      # Also emit production-friendly metrics without trace correlation
+      :telemetry.execute([:dice, :rolls], %{simple: 1}, %{
+        sides: sides_int,
+        result_range: result_range
       })
 
       # fast but random sleep to create some latency and variability in traces
@@ -64,7 +76,12 @@ defmodule ElixirPhxWeb.DiceController do
       end_time = System.monotonic_time()
       duration = System.convert_time_unit(end_time - start_time, :native, :millisecond)
 
-      :telemetry.execute([:dice], %{processing_time: duration}, %{
+      :telemetry.execute([:dice, :processing_time], %{value: duration}, %{
+        sides: sides_int
+      })
+
+      # Also emit production-friendly processing time metric
+      :telemetry.execute([:dice, :processing_time], %{simple: duration}, %{
         sides: sides_int
       })
 
@@ -94,5 +111,35 @@ defmodule ElixirPhxWeb.DiceController do
 
       result
     end
+  end
+
+  # Extract current OpenTelemetry trace and span IDs for metric correlation
+  defp get_trace_correlation do
+    span_ctx = Tracer.current_span_ctx()
+
+    trace_id =
+      case span_ctx do
+        {:span_ctx, _trace_id_int, trace_id_hex, _span_id_int, _span_id_hex, _, _, _, _, _, _}
+        when is_binary(trace_id_hex) ->
+          trace_id_hex
+
+        _ ->
+          "no_trace"
+      end
+
+    span_id =
+      case span_ctx do
+        {:span_ctx, _trace_id_int, _trace_id_hex, _span_id_int, span_id_hex, _, _, _, _, _, _}
+        when is_binary(span_id_hex) ->
+          span_id_hex
+
+        _ ->
+          "no_span"
+      end
+
+    %{
+      trace_id: trace_id,
+      span_id: span_id
+    }
   end
 end

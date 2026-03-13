@@ -1,0 +1,260 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Elixir Phoenix Dice - Working Metrics (Fixed)",
+    "tags": ["elixir", "otel", "traces", "working"],
+    "timezone": "browser",
+    "refresh": "5s",
+    "schemaVersion": 30,
+    "version": 1,
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "🎲 Dice Roll Totals by Type",
+        "type": "timeseries",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "dice_rolls_total",
+            "interval": "",
+            "legendFormat": "{{sides}}-sided ({{result_range}})",
+            "refId": "A"
+          }
+        ],
+        "links": [
+          {
+            "title": "🔍 View Traces for High Activity",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"}\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "fillOpacity": 10,
+              "gradientMode": "none"
+            },
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "⚡ Processing Time Distribution",
+        "type": "timeseries",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "dice_processing_time_simple_sum / dice_processing_time_simple_count",
+            "interval": "",
+            "legendFormat": "Avg time - {{sides}} sides",
+            "refId": "A"
+          }
+        ],
+        "links": [
+          {
+            "title": "🐌 View Slow Traces",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"} | duration > 100ms\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear"
+            },
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "🎯 Current Dice Activity (by sides)",
+        "type": "piechart",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "sum by (sides) (dice_rolls_total)",
+            "interval": "",
+            "legendFormat": "{{sides}}-sided",
+            "refId": "A"
+          }
+        ],
+        "links": [
+          {
+            "title": "🔍 Explore Traces by Dice Type",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"}\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 8
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "pieType": "pie",
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          },
+          "legend": {
+            "displayMode": "visible",
+            "placement": "right",
+            "values": ["value"]
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "📈 Roll Results Distribution",
+        "type": "barchart",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "sum by (result_range) (dice_rolls_total)",
+            "interval": "",
+            "legendFormat": "{{result_range}} results",
+            "refId": "A"
+          }
+        ],
+        "links": [
+          {
+            "title": "🎲 View Result Traces",
+            "url": "/explore?left=[\"${__from}\",\"${__to}\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"}\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 8
+        },
+        "options": {
+          "orientation": "horizontal",
+          "xField": "result_range"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "⏱️ Live Request Rate",
+        "type": "stat",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "sum(irate(dice_rolls_total[30s]))",
+            "interval": "",
+            "legendFormat": "Requests/sec",
+            "refId": "A"
+          }
+        ],
+        "links": [
+          {
+            "title": "🚀 View Live Traces",
+            "url": "/explore?left=[\"now-2m\",\"now\",\"Tempo\",{\"queries\":[{\"refId\":\"A\",\"query\":\"{service.name=\\\"elixir-phx-dice-server\\\"}\"}]}]",
+            "targetBlank": true
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 8
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.5
+                },
+                {
+                  "color": "red",
+                  "value": 2
+                }
+              ]
+            },
+            "unit": "reqps",
+            "min": 0
+          }
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        }
+      }
+    ]
+  },
+  "overwrite": true
+}

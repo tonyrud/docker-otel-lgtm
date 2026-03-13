@@ -76,6 +76,7 @@ services:
       - GF_PATHS_LOGS=/data/grafana/log
       - GF_PATHS_PLUGINS=/data/grafana/plugins
       - GF_PATHS_PROVISIONING=/data/grafana/provisioning
+      - OTEL_NODE_DISABLED_INSTRUMENTATIONS="fs,dns" # TODO: test blacklisting
 
 volumes:
   postgres_data:

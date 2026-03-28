@@ -71,6 +71,9 @@ services:
       - ../../docker/otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml
       - ../../docker/otelcol-config-export-http.yaml:/otel-lgtm/otelcol-config-export-http.yaml
       - ../../docker/grafana-datasources.yaml:/data/grafana/provisioning/datasources/datasources.yaml:ro
+      - ../../docker/grafana-dashboards.yaml:/data/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./grafana-dashboard.json:/otel-lgtm/grafana-dashboard.json:ro
+      - ./grafana-advanced-dashboard.json:/otel-lgtm/grafana-advanced-dashboard.json:ro
       - ./log:/var/log/elixir_phx:ro
     env_file:
       - .env.lgtm

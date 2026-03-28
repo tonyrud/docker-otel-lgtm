@@ -1,3 +1,4 @@
+file_format: "windows-eol"
 receivers:
   otlp:
     protocols:

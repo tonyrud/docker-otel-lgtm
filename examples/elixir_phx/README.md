@@ -1,11 +1,40 @@
-# Elixir Phoenix Otel Example
+# Elixir Phoenix OpenTelemetry Example
 
-## Dependecies
+This example demonstrates a Phoenix application with comprehensive observability:
+- **Traces**: OpenTelemetry distributed tracing
+- **Metrics**: Prometheus metrics via Telemetry  
+- **Logs**: Structured JSON logging
+
+
+## Dependencies
 
 - Docker
-- watch
 
-## Local Dev
+## Quick Start
+
+Start the example with metrics:
+
+```bash
+cd examples/elixir_phx
+docker compose up --build
+```
+
+## Viewing Metrics
+
+### Available Endpoints
+
+- Application: [`http://localhost:4000/`](http://localhost:4000/)
+- Dice rolling: [`http://localhost:4000/rolldice/6`](http://localhost:4000/rolldice/6)  
+- Prometheus metrics: [`http://localhost:9586/metrics`](http://localhost:9586/metrics)
+- Grafana: [`http://localhost:3000/`](http://localhost:3000/) (admin/admin)
+- Prometheus UI: [`http://localhost:9090/`](http://localhost:9090/)
+
+### Grafana Dashboard
+
+1. Open Grafana at [`http://localhost:3000/`](http://localhost:3000/)
+2. Login with admin/admin 
+
+## Local Development
 
 `cd examples/elixir_phx`
 

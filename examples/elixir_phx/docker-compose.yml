@@ -17,6 +17,7 @@ services:
       DB_HOST: db
     ports:
       - "4000:4000"
+      - "9568:9568" # Prometheus metrics endpoint
     volumes:
       - .:/app
       - ./log:/app/log
@@ -68,13 +69,20 @@ services:
       - ../../container/loki:/data/loki
       - ../../container/tempo:/data/tempo
       - ../../docker/otelcol-config.yaml:/otel-lgtm/otelcol-config.yaml
+      - ../../docker/otelcol-config-export-http.yaml:/otel-lgtm/otelcol-config-export-http.yaml
       - ../../docker/grafana-datasources.yaml:/data/grafana/provisioning/datasources/datasources.yaml:ro
+      - ../../docker/grafana-dashboards.yaml:/data/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./grafana-dashboard.json:/otel-lgtm/grafana-dashboard.json:ro
+      - ./grafana-advanced-dashboard.json:/otel-lgtm/grafana-advanced-dashboard.json:ro
       - ./log:/var/log/elixir_phx:ro
+    env_file:
+      - .env.lgtm
     environment:
       - GF_PATHS_DATA=/data/grafana
       - GF_PATHS_LOGS=/data/grafana/log
       - GF_PATHS_PLUGINS=/data/grafana/plugins
       - GF_PATHS_PROVISIONING=/data/grafana/provisioning
+      - OTEL_NODE_DISABLED_INSTRUMENTATIONS="fs,dns" # TODO: test blacklisting
 
 volumes:
   postgres_data:

@@ -73,7 +73,9 @@ defmodule ElixirPhx.MixProject do
       {:opentelemetry_phoenix, "~> 2.0"},
       {:opentelemetry_ecto, "~> 1.2"},
       {:opentelemetry_cowboy, "~> 0.3"},
-      {:opentelemetry_bandit, "~> 0.2"}
+      {:opentelemetry_bandit, "~> 0.2"},
+      # Prometheus metrics dependencies
+      {:telemetry_metrics_prometheus, "~> 1.1"}
     ]
   end
 

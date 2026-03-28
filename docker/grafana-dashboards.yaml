@@ -16,3 +16,13 @@ providers:
     options:
       path: /otel-lgtm/grafana-dashboard-jvm-metrics.json
       foldersFromFilesStructure: false
+  - name: "Elixir Phoenix - Metrics to Traces"
+    type: file
+    options:
+      path: /otel-lgtm/grafana-dashboard.json
+      foldersFromFilesStructure: false
+  - name: "Elixir Phoenix - Advanced Observability" 
+    type: file
+    options:
+      path: /otel-lgtm/grafana-advanced-dashboard.json
+      foldersFromFilesStructure: false
